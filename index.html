@@ -2,7 +2,8 @@
 
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
     <title>Hamza Ali - Designer</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
@@ -41,8 +42,8 @@
                 <section id="hello" class="intro-right">
                     <hr />
                     <h2 id="cascading-text">
-                        Hi, I'm Hamza<br />
-                        I'm a left—handed, near—sighted, Toronto—based Brand Designer with
+                        Hi, I'm Hamza.<br />
+                        I'm a left—handed, near—sighted, Toronto—based, Brand Designer with
                         quite a good eye for detail.<br /><br />
                         I enjoy designing for brands that resonate with people.
                     </h2>
@@ -460,42 +461,42 @@
 
 
         //Arrows on nav links
-    document.addEventListener("DOMContentLoaded", () => {
-        const sections = document.querySelectorAll("main section");
-        const navLinks = document.querySelectorAll(".nav-links a");
+        document.addEventListener("DOMContentLoaded", () => {
+            const sections = document.querySelectorAll("main section");
+            const navLinks = document.querySelectorAll(".nav-links a");
 
-        function onScroll() {
-            let currentId = null;
+            function onScroll() {
+                let currentId = null;
 
-            const scrollPosition = window.scrollY + 150; // give buffer for early detection
+                const scrollPosition = window.scrollY + 150; // give buffer for early detection
 
-            for (let i = 0; i < sections.length; i++) {
-                const section = sections[i];
-                const offsetTop = section.offsetTop;
-                const offsetHeight = section.offsetHeight;
+                for (let i = 0; i < sections.length; i++) {
+                    const section = sections[i];
+                    const offsetTop = section.offsetTop;
+                    const offsetHeight = section.offsetHeight;
 
-                if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
-                    currentId = section.id;
-                    break;
+                    if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
+                        currentId = section.id;
+                        break;
+                    }
+                }
+
+                // Only update classes if we found a visible section
+                if (currentId) {
+                    navLinks.forEach(link => {
+                        link.classList.remove("active");
+                        if (link.getAttribute("href") === `#${currentId}`) {
+                            link.classList.add("active");
+                        }
+                    });
                 }
             }
 
-            // Only update classes if we found a visible section
-            if (currentId) {
-                navLinks.forEach(link => {
-                    link.classList.remove("active");
-                    if (link.getAttribute("href") === `#${currentId}`) {
-                        link.classList.add("active");
-                    }
-                });
-            }
-        }
+            window.addEventListener("scroll", onScroll);
+            onScroll(); // Initial call to set the correct link
+        });
 
-        window.addEventListener("scroll", onScroll);
-        onScroll(); // Initial call to set the correct link
-    });
-
-            //arrows on nav links
+        //arrows on nav links
 
 
 
@@ -600,10 +601,7 @@
 
 
 
-
-
-        // Simple CAROUSEL functionality
-            const carousels = document.querySelectorAll(".carousel");
+        const carousels = document.querySelectorAll(".carousel");
 
             carousels.forEach((carousel) => {
                 const inner = carousel.querySelector(".carousel-inner");
@@ -672,16 +670,112 @@
 
                 function handleManualNav(fn) {
                     fn();
-                    startAutoSlide();  // Reset timer on manual interaction
+                    startAutoSlide(); // Reset timer on manual interaction
                 }
 
                 nextBtn.addEventListener("click", () => handleManualNav(next));
                 prevBtn.addEventListener("click", () => handleManualNav(prev));
 
+                // 🧠 Swipe + Drag for both Mobile & Desktop
+                let startX = 0;
+                let currentX = 0;
+                let isDragging = false;
+                let deltaX = 0;
+
+                // Touch Start
+                carousel.addEventListener("touchstart", (e) => {
+                    if (e.target.closest(".carousel-nav")) return;
+                    clearInterval(autoSlideInterval);
+
+                    startX = e.touches[0].clientX;
+                    currentX = startX;
+                    isDragging = true;
+
+                    inner.style.transition = "none";
+                }, { passive: true });
+
+                // Mouse Start
+                carousel.addEventListener("mousedown", (e) => {
+                    if (e.target.closest(".carousel-nav")) return;
+                    clearInterval(autoSlideInterval);
+
+                    startX = e.clientX;
+                    currentX = startX;
+                    isDragging = true;
+
+                    inner.style.transition = "none";
+                    carousel.style.cursor = "grabbing";
+                    e.preventDefault();
+                });
+
+                // Touch Move
+                carousel.addEventListener("touchmove", (e) => {
+                    if (!isDragging) return;
+                    currentX = e.touches[0].clientX;
+                    deltaX = currentX - startX;
+
+                    inner.style.transform = `translateX(calc(-${currentIndex * 100}% + ${deltaX}px))`;
+                }, { passive: true });
+
+                // Mouse Move
+                carousel.addEventListener("mousemove", (e) => {
+                    if (!isDragging) return;
+                    currentX = e.clientX;
+                    deltaX = currentX - startX;
+
+                    inner.style.transform = `translateX(calc(-${currentIndex * 100}% + ${deltaX}px))`;
+                });
+
+                // Touch & Mouse End
+                function endDrag() {
+                    if (!isDragging) return;
+                    isDragging = false;
+
+                    const threshold = 50;
+
+                    if (deltaX > threshold && currentIndex > 0) {
+                        currentIndex--;
+                    } else if (deltaX < -threshold && currentIndex < allItems.length - 1) {
+                        currentIndex++;
+                    }
+
+                    inner.style.transition = "transform 0.3s ease-in-out";
+                    inner.style.transform = `translateX(-${currentIndex * 100}%)`;
+
+                    // Snap if at clone
+                    setTimeout(() => {
+                        if (currentIndex === 0) {
+                            inner.style.transition = "none";
+                            currentIndex = allItems.length - 2;
+                            inner.style.transform = `translateX(-${currentIndex * 100}%)`;
+                        } else if (currentIndex === allItems.length - 1) {
+                            inner.style.transition = "none";
+                            currentIndex = 1;
+                            inner.style.transform = `translateX(-${currentIndex * 100}%)`;
+                        }
+                    }, 350);
+
+                    setTimeout(() => {
+                        startAutoSlide();
+                    }, 500);
+
+                    carousel.style.cursor = "grab";
+                }
+
+                carousel.addEventListener("touchend", endDrag);
+                carousel.addEventListener("mouseup", endDrag);
+                carousel.addEventListener("mouseleave", () => {
+                    if (isDragging) endDrag();
+                });
+
+                // Start the auto-slide initially
                 setTimeout(() => {
-                    startAutoSlide(); // Initial start
+                    startAutoSlide();
                 }, 50);
             });
+
+
+
 
 
 
