@@ -233,12 +233,13 @@ hr {
 
 .contact-links-mobile a {
     text-decoration: underline dotted;
-    color: inherit;
 }
 
 .contact-links-mobile a:hover {
     text-decoration: underline;
 }
+
+
 
 .main-content {
     margin-top: 48px;
