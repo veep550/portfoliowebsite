@@ -433,11 +433,70 @@
                         </div>
                     </div>
                 </section>
+
+                <!-- Mobile Contact Links -->
+                <section class="contact-section hideondesktop">
+                    <h3 class="contact-title">Contact</h3>
+                    <hr />
+                    <div class="contact-links-mobile">
+                    <a id="email-link" href="mailto:hamzayali@gmail.com">
+                        hamzayali@gmail.com <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+                            style="vertical-align: middle;">
+                            <path d="M14 3h7v7h-2V6.41l-9.29 9.3-1.42-1.42 9.3-9.29H14V3z" />
+                        </svg>
+                    </a>
+
+                    </div>
+                </div>
             </main>
         </div>
     </div>
 
     <script>
+
+
+
+
+
+
+        //Arrows on nav links
+    document.addEventListener("DOMContentLoaded", () => {
+        const sections = document.querySelectorAll("main section");
+        const navLinks = document.querySelectorAll(".nav-links a");
+
+        function onScroll() {
+            let currentId = "hello"; // default to hello if no section matched
+
+            // Go through each section to find the one in view
+            for (const section of sections) {
+                const top = window.scrollY;
+                const offset = section.offsetTop - 100;
+                const height = section.offsetHeight;
+
+                if (top >= offset && top < offset + height) {
+                    currentId = section.id;
+                }
+            }
+
+            // Update nav link classes
+            navLinks.forEach(link => {
+                link.classList.remove("active");
+                if (link.getAttribute("href") === `#${currentId}`) {
+                    link.classList.add("active");
+                }
+            });
+        }
+
+        window.addEventListener("scroll", onScroll);
+        onScroll(); // run once on load
+    });
+            //arrows on nav links
+
+
+
+
+
+
         //Simple Cascade Effect SCript
 
         document.addEventListener("DOMContentLoaded", () => {
