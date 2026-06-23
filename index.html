@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 
 <head>
@@ -9,6 +10,170 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
         rel="stylesheet" />
     <link rel="stylesheet" href="css/styles.css" />
+
+    <style>
+        /* --- New Lightbox & Zoom Icon Styles --- */
+
+        .carousel-item {
+            position: relative;
+            cursor: pointer;
+            display: block;
+        }
+
+        .carousel-item::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 5;
+        }
+
+        .zoom-icon {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .zoom-icon i {
+            font-size: 1.15rem;
+            -webkit-text-stroke: 0.6px rgba(0, 0, 0, 0.6);
+        }
+
+        .carousel-item:hover .zoom-icon,
+        .carousel-item:focus .zoom-icon {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .zoom-icon {
+                opacity: 0.8;
+            }
+        }
+
+        /* --- Click Fix for Middle of Image --- */
+        .carousel-nav {
+            pointer-events: none;
+        }
+
+        .carousel-nav button {
+            pointer-events: auto;
+        }
+
+        /* --- Lightbox Styles --- */
+        .lightbox {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .lightbox.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .lightbox-content {
+            max-width: 90%;
+            max-height: 90vh;
+            border-radius: 4px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+            object-fit: contain;
+            position: relative;
+            z-index: 10001;
+            /* Added transition for fluid next/prev */
+            transition: opacity 0.2s ease-in-out;
+            opacity: 1;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+            z-index: 10002;
+        }
+
+        .lightbox-close:hover {
+            color: #a8a8a8;
+        }
+
+        .lightbox-prev,
+        .lightbox-next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10002;
+            transition: background 0.3s ease;
+        }
+
+        .lightbox-prev:hover,
+        .lightbox-next:hover {
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        .lightbox-prev {
+            left: 30px;
+        }
+
+        .lightbox-next {
+            right: 30px;
+        }
+
+        @media (max-width: 768px) {
+
+            .lightbox-prev,
+            .lightbox-next {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+
+            .lightbox-prev {
+                left: 10px;
+            }
+
+            .lightbox-next {
+                right: 10px;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -52,53 +217,48 @@
                 <section id="experience">
                     <h3 class="section-title">Experience</h3>
 
-
-                    <!----------------------------------------freelance--------------------------------------------------------->
                     <hr />
                     <div class="experience-item-grid">
-                        <!-- Grid Column 1: Number -->
                         <div class="experience-number">01</div>
-
-                        <!-- Grid Column 2: Left Column Content -->
                         <div class="experience-left-content">
                             <div class="experience-header-mobile">
                                 <div class="experience-number hide-in-grid">01</div>
                                 <div class="experience-company">Freelance</div>
                             </div>
 
-                            <!-- 2. Carousel ----------------->
                             <div class="carousel hideondesktop">
                                 <div class="carousel-inner">
                                     <div class="carousel-item">
                                         <img src="images/freelance/image1.png" alt="..." />
+                                        <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
                                     </div>
                                     <div class="carousel-item">
                                         <img src="images/freelance/image2.png" alt="..." />
+                                        <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
                                     </div>
                                     <div class="carousel-item">
                                         <img src="images/freelance/image3.png" alt="..." />
+                                        <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
                                     </div>
                                     <div class="carousel-item">
                                         <img src="images/freelance/image4.png" alt="..." />
+                                        <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
                                     </div>
                                     <div class="carousel-item">
                                         <img src="images/freelance/image5.png" alt="..." />
+                                        <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
                                     </div>
                                     <div class="carousel-item">
                                         <img src="images/freelance/image6.png" alt="..." />
+                                        <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
                                     </div>
                                 </div>
                                 <div class="carousel-nav">
-                                    <button class="prev">
-                                        <i class="fas fa-chevron-left"></i>
-                                    </button>
-                                    <button class="next">
-                                        <i class="fas fa-chevron-right"></i>
-                                    </button>
+                                    <button class="prev"><i class="fas fa-chevron-left"></i></button>
+                                    <button class="next"><i class="fas fa-chevron-right"></i></button>
                                 </div>
                             </div>
 
-                            <!-- 3. Role + Date ---------------->
                             <div class="experience-role-row hideondesktop">
                                 <div class="experience-title">Brand & Web Designer</div>
                                 <div class="experience-date">2024 — Present</div>
@@ -110,8 +270,7 @@
                                 wide range of branding needs, most
                                 notably developing visual identity concepts for several organizations' marketing
                                 campaigns.
-                                <br>
-                                <br>
+                                <br><br>
                                 My work blends strategic
                                 thinking with hands-on design, delivering thoughtful, flexible visuals across both print
                                 and digital platforms.
@@ -130,7 +289,6 @@
                             </div>
                         </div>
 
-                        <!-- Grid Column 3: Right Column --------->
                         <div class="experience-right hideonmobile">
                             <div class="experience-role-row">
                                 <div class="experience-title">Brand & Web Designer</div>
@@ -141,82 +299,78 @@
                                 <div class="carousel-inner">
                                     <div class="carousel-item">
                                         <img src="images/freelance/image1.png" alt="..." />
+                                        <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
                                     </div>
                                     <div class="carousel-item">
                                         <img src="images/freelance/image2.png" alt="..." />
+                                        <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
                                     </div>
                                     <div class="carousel-item">
                                         <img src="images/freelance/image3.png" alt="..." />
+                                        <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
                                     </div>
                                     <div class="carousel-item">
                                         <img src="images/freelance/image4.png" alt="..." />
+                                        <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
                                     </div>
                                     <div class="carousel-item">
                                         <img src="images/freelance/image5.png" alt="..." />
+                                        <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
                                     </div>
                                     <div class="carousel-item">
                                         <img src="images/freelance/image6.png" alt="..." />
+                                        <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
                                     </div>
                                 </div>
                                 <div class="carousel-nav">
-                                    <button class="prev">
-                                        <i class="fas fa-chevron-left"></i>
-                                    </button>
-                                    <button class="next">
-                                        <i class="fas fa-chevron-right"></i>
-                                    </button>
+                                    <button class="prev"><i class="fas fa-chevron-left"></i></button>
+                                    <button class="next"><i class="fas fa-chevron-right"></i></button>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <!------------------------------------------------------------------------------------------------->
-
-                    <!----------------------------------------------tcmv--------------------------------------------------->
                     <hr />
                     <div class="experience-item-grid">
-                        <!-- Grid Column 1: Number -->
                         <div class="experience-number">02</div>
-
-                        <!-- Grid Column 2: Left Column Content -->
                         <div class="experience-left-content">
                             <div class="experience-header-mobile">
                                 <div class="experience-number hide-in-grid">02</div>
                                 <div class="experience-company">TCMV Elections</div>
                             </div>
 
-                            <!-- 2. Carousel ----------------->
                             <div class="carousel hideondesktop">
                                 <div class="carousel-inner">
                                     <div class="carousel-item">
                                         <img src="images/image.png" alt="..." />
+                                        <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
                                     </div>
                                     <div class="carousel-item">
                                         <img src="images/image1.png" alt="..." />
+                                        <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
                                     </div>
                                     <div class="carousel-item">
                                         <img src="images/image2.png" alt="..." />
+                                        <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
                                     </div>
                                     <div class="carousel-item">
                                         <img src="images/image3.png" alt="..." />
+                                        <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
                                     </div>
                                     <div class="carousel-item">
                                         <img src="images/image4.png" alt="..." />
+                                        <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
                                     </div>
                                     <div class="carousel-item">
                                         <img src="images/image5.png" alt="..." />
+                                        <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
                                     </div>
                                 </div>
                                 <div class="carousel-nav">
-                                    <button class="prev">
-                                        <i class="fas fa-chevron-left"></i>
-                                    </button>
-                                    <button class="next">
-                                        <i class="fas fa-chevron-right"></i>
-                                    </button>
+                                    <button class="prev"><i class="fas fa-chevron-left"></i></button>
+                                    <button class="next"><i class="fas fa-chevron-right"></i></button>
                                 </div>
                             </div>
 
-                            <!-- 3. Role + Date ---------------->
                             <div class="experience-role-row hideondesktop">
                                 <div class="experience-title">Brand Designer</div>
                                 <div class="experience-date">2021 — 2024</div>
@@ -244,13 +398,11 @@
                                     <div class="team-member">InDesign</div>
                                     <div class="team-member">Canva</div>
                                     <div class="team-member">HTML</div>
-
                                     <div class="team-member">CSS</div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Grid Column 3: Right Column --------->
                         <div class="experience-right hideonmobile">
                             <div class="experience-role-row">
                                 <div class="experience-title">Brand Designer</div>
@@ -261,79 +413,74 @@
                                 <div class="carousel-inner">
                                     <div class="carousel-item">
                                         <img src="images/image.png" alt="..." />
+                                        <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
                                     </div>
                                     <div class="carousel-item">
                                         <img src="images/image1.png" alt="..." />
+                                        <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
                                     </div>
                                     <div class="carousel-item">
                                         <img src="images/image2.png" alt="..." />
+                                        <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
                                     </div>
                                     <div class="carousel-item">
                                         <img src="images/image3.png" alt="..." />
+                                        <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
                                     </div>
                                     <div class="carousel-item">
                                         <img src="images/image4.png" alt="..." />
+                                        <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
                                     </div>
                                     <div class="carousel-item">
                                         <img src="images/image5.png" alt="..." />
+                                        <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
                                     </div>
                                 </div>
                                 <div class="carousel-nav">
-                                    <button class="prev">
-                                        <i class="fas fa-chevron-left"></i>
-                                    </button>
-                                    <button class="next">
-                                        <i class="fas fa-chevron-right"></i>
-                                    </button>
+                                    <button class="prev"><i class="fas fa-chevron-left"></i></button>
+                                    <button class="next"><i class="fas fa-chevron-right"></i></button>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <!------------------------------------------------------------------------------------------------->
-
-                    <!--------------------------------------------silkroad----------------------------------------------------->
                     <hr />
                     <div class="experience-item-grid">
-                        <!-- Grid Column 1: Number -->
                         <div class="experience-number">03</div>
-
-                        <!-- Grid Column 2: Left Column Content -->
                         <div class="experience-left-content">
                             <div class="experience-header-mobile">
                                 <div class="experience-number hide-in-grid">03</div>
                                 <div class="experience-company">Silk Road Institute</div>
                             </div>
 
-                            <!-- 2. Carousel ----------------->
                             <div class="carousel hideondesktop">
                                 <div class="carousel-inner">
                                     <div class="carousel-item">
                                         <img src="images/sri/image1.png" alt="The Athletic Hockey Show" />
+                                        <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
                                     </div>
                                     <div class="carousel-item">
                                         <img src="images/sri/image.png" alt="Baggs & Brisbee Podcast" />
+                                        <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
                                     </div>
                                     <div class="carousel-item">
                                         <img src="images/sri/image2.png" alt="Baggs & Brisbee Podcast" />
+                                        <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
                                     </div>
                                     <div class="carousel-item">
                                         <img src="images/sri/image3.png" alt="Baggs & Brisbee Podcast" />
+                                        <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
                                     </div>
                                     <div class="carousel-item">
                                         <img src="images/sri/image4.png" alt="Baggs & Brisbee Podcast" />
+                                        <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
                                     </div>
                                 </div>
                                 <div class="carousel-nav">
-                                    <button class="prev">
-                                        <i class="fas fa-chevron-left"></i>
-                                    </button>
-                                    <button class="next">
-                                        <i class="fas fa-chevron-right"></i>
-                                    </button>
+                                    <button class="prev"><i class="fas fa-chevron-left"></i></button>
+                                    <button class="next"><i class="fas fa-chevron-right"></i></button>
                                 </div>
                             </div>
 
-                            <!-- 3. Role + Date ---------------->
                             <div class="experience-role-row hideondesktop">
                                 <div class="experience-title">Graphic Designer</div>
                                 <div class="experience-date">2020 — 2022</div>
@@ -361,7 +508,6 @@
                             </div>
                         </div>
 
-                        <!-- Grid Column 3: Right Column --------->
                         <div class="experience-right hideonmobile">
                             <div class="experience-role-row">
                                 <div class="experience-title">Graphic Designer</div>
@@ -372,36 +518,33 @@
                                 <div class="carousel-inner">
                                     <div class="carousel-item">
                                         <img src="images/sri/image1.png" alt="The Athletic Hockey Show" />
+                                        <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
                                     </div>
                                     <div class="carousel-item">
                                         <img src="images/sri/image.png" alt="Baggs & Brisbee Podcast" />
+                                        <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
                                     </div>
                                     <div class="carousel-item">
                                         <img src="images/sri/image2.png" alt="Baggs & Brisbee Podcast" />
+                                        <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
                                     </div>
                                     <div class="carousel-item">
                                         <img src="images/sri/image3.png" alt="Baggs & Brisbee Podcast" />
+                                        <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
                                     </div>
                                     <div class="carousel-item">
                                         <img src="images/sri/image4.png" alt="Baggs & Brisbee Podcast" />
+                                        <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
                                     </div>
                                 </div>
                                 <div class="carousel-nav">
-                                    <button class="prev">
-                                        <i class="fas fa-chevron-left"></i>
-                                    </button>
-                                    <button class="next">
-                                        <i class="fas fa-chevron-right"></i>
-                                    </button>
+                                    <button class="prev"><i class="fas fa-chevron-left"></i></button>
+                                    <button class="next"><i class="fas fa-chevron-right"></i></button>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <!------------------------------------------------------------------------------------------------->
-
                 </section>
-
-
 
                 <section id="about" class="about-section">
                     <h3 class="section-title">About</h3>
@@ -455,7 +598,6 @@
                     </div>
                 </section>
 
-                <!-- Mobile Contact Links -->
                 <section class="contact-section hideondesktop">
                     <h3 class="contact-title">Contact</h3>
                     <hr />
@@ -466,20 +608,20 @@
                                 <path d="M14 3h7v7h-2V6.41l-9.29 9.3-1.42-1.42 9.3-9.29H14V3z" />
                             </svg>
                         </a>
-
                     </div>
+                </section>
+            </main>
         </div>
-        </main>
     </div>
+
+    <div id="lightbox" class="lightbox">
+        <span class="lightbox-close">&times;</span>
+        <button class="lightbox-prev"><i class="fas fa-chevron-left"></i></button>
+        <img class="lightbox-content" id="lightbox-img">
+        <button class="lightbox-next"><i class="fas fa-chevron-right"></i></button>
     </div>
 
     <script>
-
-
-
-
-
-
         //Arrows on nav links
         document.addEventListener("DOMContentLoaded", () => {
             const sections = document.querySelectorAll("main section");
@@ -488,7 +630,7 @@
             function onScroll() {
                 let currentId = null;
 
-                const scrollPosition = window.scrollY + 150; // give buffer for early detection
+                const scrollPosition = window.scrollY + 150;
 
                 for (let i = 0; i < sections.length; i++) {
                     const section = sections[i];
@@ -501,7 +643,6 @@
                     }
                 }
 
-                // Only update classes if we found a visible section
                 if (currentId) {
                     navLinks.forEach(link => {
                         link.classList.remove("active");
@@ -513,22 +654,13 @@
             }
 
             window.addEventListener("scroll", onScroll);
-            onScroll(); // Initial call to set the correct link
+            onScroll();
         });
 
-        //arrows on nav links
-
-
-
-
-
-
         //Simple Cascade Effect SCript
-
         document.addEventListener("DOMContentLoaded", () => {
             const h2 = document.getElementById("cascading-text");
 
-            // Step 1: Wrap words and preserve <br>
             const originalHTML = h2.innerHTML;
             const tempDiv = document.createElement("div");
             tempDiv.innerHTML = originalHTML;
@@ -557,7 +689,6 @@
             h2.innerHTML = "";
             newContent.forEach((el) => h2.appendChild(el));
 
-            // Step 2: Group by visual line
             const spans = [...h2.querySelectorAll(".cascade-word")];
             const lines = [];
             let currentTop = null;
@@ -578,21 +709,12 @@
 
             if (currentLine.length > 0) lines.push(currentLine);
 
-            // Step 3: Animate each line with slight overlap and inner stagger
             lines.forEach((line, lineIndex) => {
                 line.forEach((span, wordIndex) => {
                     span.style.animationDelay = `${lineIndex * 0.1 + wordIndex * 0.01}s`;
                 });
             });
         });
-
-        //Simple Cascade Effect SCript
-
-
-
-
-
-
 
         //Simple Scrolling SCript
         let lastScrollY = 0;
@@ -601,7 +723,6 @@
         function updateHeader() {
             const header = document.querySelector(".site-header");
             if (lastScrollY > 10) {
-                // Slight threshold to avoid jitter
                 header.classList.add("scrolled");
             } else {
                 header.classList.remove("scrolled");
@@ -617,27 +738,30 @@
             }
         });
 
-        //Simple Scrolling SCript
-
         document.addEventListener("DOMContentLoaded", () => {
-                // Give the cascade script a tiny fraction of a second to wrap the words in spans
                 setTimeout(() => {
                     const h2 = document.getElementById("cascading-text");
                     if (!h2) return;
 
-                    // Grab the very first word span generated by your cascade script ("Hi,")
                     const greetingSpan = h2.querySelector(".cascade-word");
 
                     if (greetingSpan && greetingSpan.textContent.includes("Hi")) {
-                        // The sequence of greetings (keeping the comma for grammatical flow)
                         const greetings = ["Hi,", "Salām,", "سَلَام,"];
                         let currentIndex = 0;
 
-                        // Change the greeting automatically every 2.5 seconds (2500 milliseconds)
-                        setInterval(() => {
+                        // Function to update the text
+                        const changeGreeting = () => {
                             currentIndex = (currentIndex + 1) % greetings.length;
                             greetingSpan.textContent = greetings[currentIndex];
-                        }, 1800);
+                        };
+
+                        // 1. Trigger the FIRST change after 500ms
+                        setTimeout(() => {
+                            changeGreeting();
+
+                            // 2. Once the first change happens, start the 1800ms loop
+                            setInterval(changeGreeting, 1800);
+                        }, 500);
                     }
                 }, 10);
             });
@@ -711,19 +835,17 @@
 
             function handleManualNav(fn) {
                 fn();
-                startAutoSlide(); // Reset timer on manual interaction
+                startAutoSlide();
             }
 
             nextBtn.addEventListener("click", () => handleManualNav(next));
             prevBtn.addEventListener("click", () => handleManualNav(prev));
 
-            // 🧠 Swipe + Drag for both Mobile & Desktop
             let startX = 0;
             let currentX = 0;
             let isDragging = false;
             let deltaX = 0;
 
-            // Touch Start
             carousel.addEventListener("touchstart", (e) => {
                 if (e.target.closest(".carousel-nav")) return;
                 clearInterval(autoSlideInterval);
@@ -735,7 +857,6 @@
                 inner.style.transition = "none";
             }, { passive: true });
 
-            // Mouse Start
             carousel.addEventListener("mousedown", (e) => {
                 if (e.target.closest(".carousel-nav")) return;
                 clearInterval(autoSlideInterval);
@@ -749,7 +870,6 @@
                 e.preventDefault();
             });
 
-            // Touch Move
             carousel.addEventListener("touchmove", (e) => {
                 if (!isDragging) return;
                 currentX = e.touches[0].clientX;
@@ -758,7 +878,6 @@
                 inner.style.transform = `translateX(calc(-${currentIndex * 100}% + ${deltaX}px))`;
             }, { passive: true });
 
-            // Mouse Move
             carousel.addEventListener("mousemove", (e) => {
                 if (!isDragging) return;
                 currentX = e.clientX;
@@ -767,7 +886,6 @@
                 inner.style.transform = `translateX(calc(-${currentIndex * 100}% + ${deltaX}px))`;
             });
 
-            // Touch & Mouse End
             function endDrag() {
                 if (!isDragging) return;
                 isDragging = false;
@@ -783,7 +901,6 @@
                 inner.style.transition = "transform 0.3s ease-in-out";
                 inner.style.transform = `translateX(-${currentIndex * 100}%)`;
 
-                // Snap if at clone
                 setTimeout(() => {
                     if (currentIndex === 0) {
                         inner.style.transition = "none";
@@ -809,18 +926,114 @@
                 if (isDragging) endDrag();
             });
 
-            // Start the auto-slide initially
             setTimeout(() => {
                 startAutoSlide();
             }, 50);
         });
 
+        // --- Lightbox / Zoom Logic (Updated with Fluid Fade Transition) ---
+        document.addEventListener("DOMContentLoaded", () => {
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightbox-img');
+            const closeBtn = document.querySelector('.lightbox-close');
+            const nextBtn = document.querySelector('.lightbox-next');
+            const prevBtn = document.querySelector('.lightbox-prev');
+            const carouselItems = document.querySelectorAll('.carousel-item');
 
+            let currentLightboxImages = [];
+            let currentLightboxIndex = 0;
 
+            const updateLightboxImage = () => {
+                // Fade out the current image
+                lightboxImg.style.opacity = 0;
 
+                // Wait for the CSS fade-out transition (0.2s = 200ms)
+                setTimeout(() => {
+                    lightboxImg.src = currentLightboxImages[currentLightboxIndex];
 
+                    // Fade back in only after the new image is ready
+                    lightboxImg.onload = () => {
+                        lightboxImg.style.opacity = 1;
+                    };
+                }, 200);
+            };
 
+            const nextLightboxImage = (e) => {
+                if (e) e.stopPropagation();
+                currentLightboxIndex = (currentLightboxIndex + 1) % currentLightboxImages.length;
+                updateLightboxImage();
+            };
 
+            const prevLightboxImage = (e) => {
+                if (e) e.stopPropagation();
+                currentLightboxIndex = (currentLightboxIndex - 1 + currentLightboxImages.length) % currentLightboxImages.length;
+                updateLightboxImage();
+            };
+
+            carouselItems.forEach(item => {
+                let startX, currentX;
+
+                item.addEventListener('mousedown', (e) => startX = e.clientX);
+                item.addEventListener('touchstart', (e) => startX = e.touches[0].clientX, { passive: true });
+
+                const handleClick = (e) => {
+                    currentX = e.clientX || (e.changedTouches ? e.changedTouches[0].clientX : startX);
+                    const diff = Math.abs(currentX - startX);
+
+                    if (diff < 10) {
+                        const img = item.querySelector('img');
+                        if (img) {
+                            const inner = item.closest('.carousel-inner');
+                            const allItems = Array.from(inner.children);
+                            const originalItems = allItems.slice(1, -1);
+
+                            currentLightboxImages = originalItems.map(node => node.querySelector('img').src);
+
+                            currentLightboxIndex = currentLightboxImages.indexOf(img.src);
+
+                            if (currentLightboxIndex === -1) {
+                                const filename = img.src.split('/').pop();
+                                currentLightboxIndex = currentLightboxImages.findIndex(src => src.endsWith(filename));
+                                if (currentLightboxIndex === -1) currentLightboxIndex = 0;
+                            }
+
+                            lightboxImg.src = currentLightboxImages[currentLightboxIndex];
+                            lightboxImg.style.opacity = 1; // Ensure it starts fully visible
+                            lightbox.classList.add('active');
+                            document.body.style.overflow = 'hidden';
+                        }
+                    }
+                };
+
+                item.addEventListener('mouseup', handleClick);
+                item.addEventListener('touchend', handleClick);
+            });
+
+            const closeLightbox = () => {
+                lightbox.classList.remove('active');
+                document.body.style.overflow = 'auto';
+                setTimeout(() => { if (!lightbox.classList.contains('active')) lightboxImg.src = ""; }, 300);
+            };
+
+            // Event Listeners
+            closeBtn.addEventListener('click', closeLightbox);
+            nextBtn.addEventListener('click', nextLightboxImage);
+            prevBtn.addEventListener('click', prevLightboxImage);
+
+            lightbox.addEventListener('click', (e) => {
+                if (e.target === lightbox) {
+                    closeLightbox();
+                }
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (lightbox.classList.contains('active')) {
+                    if (e.key === "Escape") closeLightbox();
+                    if (e.key === "ArrowRight") nextLightboxImage();
+                    if (e.key === "ArrowLeft") prevLightboxImage();
+                }
+            });
+        });
 
     </script>
 </body>
