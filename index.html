@@ -224,11 +224,11 @@
         }
 
         .section-title {
-  margin-top: 60px;    /* Squeezes out the massive gap, bringing the title closer to the previous section */
-  font-size: 46px;
-  font-weight: 400;
-  margin-bottom: 24px; /* Just a touch more breathing room before the content starts to match the scale of the 46px font */
-}
+            margin-top: 60px;
+            font-size: 46px;
+            font-weight: 400;
+            margin-bottom: 24px;
+        }
 
         @media (max-width: 768px) {
 
@@ -248,7 +248,14 @@
             }
 
             .zoom-icon {
-                display: none !important;
+                display: flex !important;
+                /* Update 1: Made visible on mobile */
+                opacity: 1;
+                /* Make it always visible on touch devices */
+                z-index: 20;
+                /* Ensure it's clickable above the overlay */
+                pointer-events: auto;
+                /* Re-enable pointer events so it can be tapped */
             }
 
             /* Extra tight structural squeeze specifically for mobile screens */
@@ -267,8 +274,8 @@
             }
 
             .section-title {
-                margin-top: 60px;    /* Gives breathing room, but removes the giant gap */
-                margin-bottom: 24px; /* Standard spacing to separate title from content */
+                margin-top: 60px;
+                margin-bottom: 24px;
                 font-size: 36px;
                 font-weight: 400;
             }
@@ -736,445 +743,468 @@
     </div>
 
     <script>
-        //Arrows on nav links
-        document.addEventListener("DOMContentLoaded", () => {
-            const sections = document.querySelectorAll("main section");
-            const navLinks = document.querySelectorAll(".nav-links a");
+    //Arrows on nav links
+    document.addEventListener("DOMContentLoaded", () => {
+        const sections = document.querySelectorAll("main section");
+        const navLinks = document.querySelectorAll(".nav-links a");
 
-            function onScroll() {
-                let currentId = null;
+        function onScroll() {
+            let currentId = null;
 
-                const scrollPosition = window.scrollY + 150;
+            const scrollPosition = window.scrollY + 150;
 
-                for (let i = 0; i < sections.length; i++) {
-                    const section = sections[i];
-                    const offsetTop = section.offsetTop;
-                    const offsetHeight = section.offsetHeight;
+            for (let i = 0; i < sections.length; i++) {
+                const section = sections[i];
+                const offsetTop = section.offsetTop;
+                const offsetHeight = section.offsetHeight;
 
-                    if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
-                        currentId = section.id;
-                        break;
+                if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
+                    currentId = section.id;
+                    break;
+                }
+            }
+
+            if (currentId) {
+                navLinks.forEach(link => {
+                    link.classList.remove("active");
+                    if (link.getAttribute("href") === `#${currentId}`) {
+                        link.classList.add("active");
                     }
-                }
-
-                if (currentId) {
-                    navLinks.forEach(link => {
-                        link.classList.remove("active");
-                        if (link.getAttribute("href") === `#${currentId}`) {
-                            link.classList.add("active");
-                        }
-                    });
-                }
-            }
-
-            window.addEventListener("scroll", onScroll);
-            onScroll();
-        });
-
-        //Simple Cascade Effect SCript
-        document.addEventListener("DOMContentLoaded", () => {
-            const h2 = document.getElementById("cascading-text");
-
-            const originalHTML = h2.innerHTML;
-            const tempDiv = document.createElement("div");
-            tempDiv.innerHTML = originalHTML;
-
-            const newContent = [];
-
-            tempDiv.childNodes.forEach((node) => {
-                if (node.nodeType === Node.TEXT_NODE) {
-                    const words = node.textContent.split(/(\s+)/);
-                    words.forEach((word) => {
-                        if (word.trim() === "") {
-                            newContent.push(document.createTextNode(word));
-                        } else {
-                            const span = document.createElement("span");
-                            span.className = "cascade-word";
-                            span.textContent = word;
-                            newContent.push(span);
-                            newContent.push(document.createTextNode(" "));
-                        }
-                    });
-                } else if (node.nodeName === "BR") {
-                    newContent.push(document.createElement("br"));
-                }
-            });
-
-            h2.innerHTML = "";
-            newContent.forEach((el) => h2.appendChild(el));
-
-            const spans = [...h2.querySelectorAll(".cascade-word")];
-            const lines = [];
-            let currentTop = null;
-            let isDraggingLine = false;
-            let currentLine = [];
-
-            spans.forEach((span) => {
-                const top = span.offsetTop;
-                if (currentTop === null) currentTop = top;
-
-                if (top !== currentTop) {
-                    lines.push(currentLine);
-                    currentLine = [span];
-                    currentTop = top;
-                } else {
-                    currentLine.push(span);
-                }
-            });
-
-            if (currentLine.length > 0) lines.push(currentLine);
-
-            lines.forEach((line, lineIndex) => {
-                line.forEach((span, wordIndex) => {
-                    span.style.animationDelay = `${lineIndex * 0.1 + wordIndex * 0.01}s`;
                 });
-            });
-        });
-
-        //Simple Scrolling SCript
-        let lastScrollY = 0;
-        let ticking = false;
-
-        function updateHeader() {
-            const header = document.querySelector(".site-header");
-            if (lastScrollY > 10) {
-                header.classList.add("scrolled");
-            } else {
-                header.classList.remove("scrolled");
             }
-            ticking = false;
         }
 
-        window.addEventListener("scroll", () => {
-            lastScrollY = window.scrollY;
-            if (!ticking) {
-                window.requestAnimationFrame(updateHeader);
-                ticking = true;
-            }
-        });
+        window.addEventListener("scroll", onScroll);
+        onScroll();
+    });
 
-        document.addEventListener("DOMContentLoaded", () => {
-            setTimeout(() => {
-                const h2 = document.getElementById("cascading-text");
-                if (!h2) return;
+    //Simple Cascade Effect SCript
+    document.addEventListener("DOMContentLoaded", () => {
+        const h2 = document.getElementById("cascading-text");
 
-                const greetingSpan = h2.querySelector(".cascade-word");
+        const originalHTML = h2.innerHTML;
+        const tempDiv = document.createElement("div");
+        tempDiv.innerHTML = originalHTML;
 
-                if (greetingSpan && greetingSpan.textContent.includes("Hi")) {
-                    const greetings = ["Hi,", "Salām,", "سَلَام,"];
-                    let currentIndex = 0;
+        const newContent = [];
 
-                    // Function to update the text
-                    const changeGreeting = () => {
-                        currentIndex = (currentIndex + 1) % greetings.length;
-                        greetingSpan.textContent = greetings[currentIndex];
-                    };
-
-                    // 1. Trigger the FIRST change after 500ms
-                    setTimeout(() => {
-                        changeGreeting();
-
-                        // 2. Once the first change happens, start the 1800ms loop
-                        setInterval(changeGreeting, 1300);
-                    }, 500);
-                }
-            }, 10);
-        });
-
-        const carousels = document.querySelectorAll(".carousel");
-
-        carousels.forEach((carousel) => {
-            const inner = carousel.querySelector(".carousel-inner");
-            const items = carousel.querySelectorAll(".carousel-item");
-
-            const prevBtn = carousel.querySelector(".prev");
-            const nextBtn = carousel.querySelector(".next");
-
-            const firstClone = items[0].cloneNode(true);
-            const lastClone = items[items.length - 1].cloneNode(true);
-
-            inner.insertBefore(lastClone, items[0]);
-            inner.appendChild(firstClone);
-
-            const allItems = carousel.querySelectorAll(".carousel-item");
-            let currentIndex = 1;
-            let transitioning = false;
-
-            inner.style.transition = "none";
-            inner.style.transform = `translateX(-${currentIndex * 100}%)`;
-            requestAnimationFrame(() => {
-                inner.style.transition = "transform 0.5s ease";
-            });
-
-            let autoSlideInterval;
-
-            function startAutoSlide() {
-                clearInterval(autoSlideInterval);
-                autoSlideInterval = setInterval(() => {
-                    next();
-                }, 4000);
-            }
-
-            function goTo(index) {
-                if (transitioning) return;
-                transitioning = true;
-
-                inner.style.transition = "transform 0.5s ease";
-                inner.style.transform = `translateX(-${index * 100}%)`;
-                currentIndex = index;
-
-                setTimeout(() => {
-                    if (currentIndex === allItems.length - 1) {
-                        inner.style.transition = "none";
-                        currentIndex = 1;
-                        inner.style.transform = `translateX(-${currentIndex * 100}%)`;
+        tempDiv.childNodes.forEach((node) => {
+            if (node.nodeType === Node.TEXT_NODE) {
+                const words = node.textContent.split(/(\s+)/);
+                words.forEach((word) => {
+                    if (word.trim() === "") {
+                        newContent.push(document.createTextNode(word));
+                    } else {
+                        const span = document.createElement("span");
+                        span.className = "cascade-word";
+                        span.textContent = word;
+                        newContent.push(span);
+                        newContent.push(document.createTextNode(" "));
                     }
-
-                    if (currentIndex === 0) {
-                        inner.style.transition = "none";
-                        currentIndex = allItems.length - 2;
-                        inner.style.transform = `translateX(-${currentIndex * 100}%)`;
-                    }
-
-                    transitioning = false;
-                }, 500);
-            }
-
-            function next() {
-                goTo(currentIndex + 1);
-            }
-
-            function prev() {
-                goTo(currentIndex - 1);
-            }
-
-            function handleManualNav(fn) {
-                fn();
-                startAutoSlide();
-            }
-
-            nextBtn.addEventListener("click", () => handleManualNav(next));
-            prevBtn.addEventListener("click", () => handleManualNav(prev));
-
-            let startX = 0;
-            let currentX = 0;
-            let isDragging = false;
-            let deltaX = 0;
-
-            carousel.addEventListener("touchstart", (e) => {
-                if (e.target.closest(".carousel-nav")) return;
-                clearInterval(autoSlideInterval);
-
-                startX = e.touches[0].clientX;
-                currentX = startX;
-                isDragging = true;
-
-                inner.style.transition = "none";
-            }, { passive: true });
-
-            carousel.addEventListener("mousedown", (e) => {
-                if (e.target.closest(".carousel-nav")) return;
-                clearInterval(autoSlideInterval);
-
-                startX = e.clientX;
-                currentX = startX;
-                isDragging = true;
-
-                inner.style.transition = "none";
-                carousel.style.cursor = "grabbing";
-                e.preventDefault();
-            });
-
-            carousel.addEventListener("touchmove", (e) => {
-                if (!isDragging) return;
-                currentX = e.touches[0].clientX;
-                deltaX = currentX - startX;
-
-                inner.style.transform = `translateX(calc(-${currentIndex * 100}% + ${deltaX}px))`;
-            }, { passive: true });
-
-            carousel.addEventListener("mousemove", (e) => {
-                if (!isDragging) return;
-                currentX = e.clientX;
-                deltaX = currentX - startX;
-
-                inner.style.transform = `translateX(calc(-${currentIndex * 100}% + ${deltaX}px))`;
-            });
-
-            function endDrag() {
-                if (!isDragging) return;
-                isDragging = false;
-
-                const threshold = 50;
-
-                if (deltaX > threshold && currentIndex > 0) {
-                    currentIndex--;
-                } else if (deltaX < -threshold && currentIndex < allItems.length - 1) {
-                    currentIndex++;
-                }
-
-                inner.style.transition = "transform 0.3s ease-in-out";
-                inner.style.transform = `translateX(-${currentIndex * 100}%)`;
-
-                setTimeout(() => {
-                    if (currentIndex === 0) {
-                        inner.style.transition = "none";
-                        currentIndex = allItems.length - 2;
-                        inner.style.transform = `translateX(-${currentIndex * 100}%)`;
-                    } else if (currentIndex === allItems.length - 1) {
-                        inner.style.transition = "none";
-                        currentIndex = 1;
-                        inner.style.transform = `translateX(-${currentIndex * 100}%)`;
-                    }
-                }, 350);
-
-                setTimeout(() => {
-                    startAutoSlide();
-                }, 500);
-
-                carousel.style.cursor = "grab";
-            }
-
-            carousel.addEventListener("touchend", endDrag);
-            carousel.addEventListener("mouseup", endDrag);
-            carousel.addEventListener("mouseleave", () => {
-                if (isDragging) endDrag();
-            });
-
-            setTimeout(() => {
-                startAutoSlide();
-            }, 50);
-        });
-
-        /* --- Full Hardware-Accelerated Sliding Lightbox Logic --- */
-        document.addEventListener("DOMContentLoaded", () => {
-            const lightbox = document.getElementById('lightbox');
-            const track = document.getElementById('lightbox-track');
-            const closeBtn = document.querySelector('.lightbox-close');
-            const nextBtn = document.querySelector('.lightbox-next');
-            const prevBtn = document.querySelector('.lightbox-prev');
-            const carouselItems = document.querySelectorAll('.carousel-item');
-
-            let currentLightboxImages = [];
-            let currentLightboxIndex = 0;
-
-            const setupLightboxSlides = () => {
-                track.innerHTML = '';
-                currentLightboxImages.forEach(src => {
-                    const slide = document.createElement('div');
-                    slide.className = 'lightbox-slide';
-                    const img = document.createElement('img');
-                    img.src = src;
-                    slide.appendChild(img);
-                    track.appendChild(slide);
                 });
-                updateLightboxPosition(true);
-            };
+            } else if (node.nodeName === "BR") {
+                newContent.push(document.createElement("br"));
+            }
+        });
 
-            const updateLightboxPosition = (immediate = false) => {
-                if (immediate) {
-                    track.style.transition = "none";
-                } else {
-                    track.style.transition = "transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
-                }
-                track.style.transform = `translateX(-${currentLightboxIndex * 100}%)`;
-            };
+        h2.innerHTML = "";
+        newContent.forEach((el) => h2.appendChild(el));
 
-            const nextLightboxImage = (e) => {
-                if (e) e.stopPropagation();
-                if (currentLightboxImages.length <= 1) return;
-                currentLightboxIndex = (currentLightboxIndex + 1) % currentLightboxImages.length;
-                updateLightboxPosition();
-            };
+        const spans = [...h2.querySelectorAll(".cascade-word")];
+        const lines = [];
+        let currentTop = null;
+        let isDraggingLine = false;
+        let currentLine = [];
 
-            const prevLightboxImage = (e) => {
-                if (e) e.stopPropagation();
-                if (currentLightboxImages.length <= 1) return;
-                currentLightboxIndex = (currentLightboxIndex - 1 + currentLightboxImages.length) % currentLightboxImages.length;
-                updateLightboxPosition();
-            };
+        spans.forEach((span) => {
+            const top = span.offsetTop;
+            if (currentTop === null) currentTop = top;
 
-            carouselItems.forEach(item => {
-                let startX, currentX;
+            if (top !== currentTop) {
+                lines.push(currentLine);
+                currentLine = [span];
+                currentTop = top;
+            } else {
+                currentLine.push(span);
+            }
+        });
 
-                item.addEventListener('mousedown', (e) => startX = e.clientX);
-                item.addEventListener('touchstart', (e) => startX = e.touches[0].clientX, { passive: true });
+        if (currentLine.length > 0) lines.push(currentLine);
 
-                const handleClick = (e) => {
-                    currentX = e.clientX || (e.changedTouches ? e.changedTouches[0].clientX : startX);
-                    const diff = Math.abs(currentX - startX);
+        lines.forEach((line, lineIndex) => {
+            line.forEach((span, wordIndex) => {
+                span.style.animationDelay = `${lineIndex * 0.1 + wordIndex * 0.01}s`;
+            });
+        });
+    });
 
-                    if (diff < 10) {
-                        const img = item.querySelector('img');
-                        if (img) {
-                            const inner = item.closest('.carousel-inner');
-                            const allItems = Array.from(inner.children);
-                            const originalItems = allItems.slice(1, -1);
+    //Simple Scrolling SCript
+    let lastScrollY = 0;
+    let ticking = false;
 
-                            currentLightboxImages = originalItems.map(node => node.querySelector('img').src);
-                            currentLightboxIndex = currentLightboxImages.indexOf(img.src);
+    function updateHeader() {
+        const header = document.querySelector(".site-header");
+        if (lastScrollY > 10) {
+            header.classList.add("scrolled");
+        } else {
+            header.classList.remove("scrolled");
+        }
+        ticking = false;
+    }
 
-                            if (currentLightboxIndex === -1) {
-                                const filename = img.src.split('/').pop();
-                                currentLightboxIndex = currentLightboxImages.findIndex(src => src.endsWith(filename));
-                                if (currentLightboxIndex === -1) currentLightboxIndex = 0;
-                            }
+    window.addEventListener("scroll", () => {
+        lastScrollY = window.scrollY;
+        if (!ticking) {
+            window.requestAnimationFrame(updateHeader);
+            ticking = true;
+        }
+    });
 
-                            setupLightboxSlides();
-                            lightbox.classList.add('active');
-                            document.body.style.overflow = 'hidden';
-                        }
-                    }
+    document.addEventListener("DOMContentLoaded", () => {
+        setTimeout(() => {
+            const h2 = document.getElementById("cascading-text");
+            if (!h2) return;
+
+            const greetingSpan = h2.querySelector(".cascade-word");
+
+            if (greetingSpan && greetingSpan.textContent.includes("Hi")) {
+                const greetings = ["Hi,", "Salām,", "سَلَام,"];
+                let currentIndex = 0;
+
+                const changeGreeting = () => {
+                    currentIndex = (currentIndex + 1) % greetings.length;
+                    greetingSpan.textContent = greetings[currentIndex];
                 };
 
-                item.addEventListener('mouseup', handleClick);
-                item.addEventListener('touchend', handleClick);
-            });
+                setTimeout(() => {
+                    changeGreeting();
+                    setInterval(changeGreeting, 1300);
+                }, 500);
+            }
+        }, 10);
+    });
 
-            const closeLightbox = () => {
-                lightbox.classList.remove('active');
-                document.body.style.overflow = 'auto';
-                setTimeout(() => { if (!lightbox.classList.contains('active')) track.innerHTML = ""; }, 300);
+    const carousels = document.querySelectorAll(".carousel");
+
+    carousels.forEach((carousel) => {
+        const inner = carousel.querySelector(".carousel-inner");
+        const items = carousel.querySelectorAll(".carousel-item");
+
+        const prevBtn = carousel.querySelector(".prev");
+        const nextBtn = carousel.querySelector(".next");
+
+        const firstClone = items[0].cloneNode(true);
+        const lastClone = items[items.length - 1].cloneNode(true);
+
+        inner.insertBefore(lastClone, items[0]);
+        inner.appendChild(firstClone);
+
+        const allItems = carousel.querySelectorAll(".carousel-item");
+        let currentIndex = 1;
+        let transitioning = false;
+
+        inner.style.transition = "none";
+        inner.style.transform = `translateX(-${currentIndex * 100}%)`;
+        requestAnimationFrame(() => {
+            inner.style.transition = "transform 0.5s ease";
+        });
+
+        let autoSlideInterval;
+
+        function startAutoSlide() {
+            clearInterval(autoSlideInterval);
+            autoSlideInterval = setInterval(() => {
+                // Check if the lightbox is open. If it is, pause the auto-scroll.
+                const lightbox = document.getElementById('lightbox');
+                if (lightbox && lightbox.classList.contains('active')) {
+                    return;
+                }
+
+                next();
+            }, 4000);
+        }
+
+        function goTo(index) {
+            if (transitioning) return;
+            transitioning = true;
+
+            inner.style.transition = "transform 0.5s ease";
+            inner.style.transform = `translateX(-${index * 100}%)`;
+            currentIndex = index;
+
+            setTimeout(() => {
+                if (currentIndex === allItems.length - 1) {
+                    inner.style.transition = "none";
+                    currentIndex = 1;
+                    inner.style.transform = `translateX(-${currentIndex * 100}%)`;
+                }
+
+                if (currentIndex === 0) {
+                    inner.style.transition = "none";
+                    currentIndex = allItems.length - 2;
+                    inner.style.transform = `translateX(-${currentIndex * 100}%)`;
+                }
+
+                transitioning = false;
+            }, 500);
+        }
+
+        function next() {
+            goTo(currentIndex + 1);
+        }
+
+        function prev() {
+            goTo(currentIndex - 1);
+        }
+
+        function handleManualNav(fn) {
+            fn();
+            startAutoSlide();
+        }
+
+        nextBtn.addEventListener("click", () => handleManualNav(next));
+        prevBtn.addEventListener("click", () => handleManualNav(prev));
+
+        let startX = 0;
+        let currentX = 0;
+        let isDragging = false;
+        let deltaX = 0;
+
+        carousel.addEventListener("touchstart", (e) => {
+            // FIX: Ignore swipe logic completely if the user touches the zoom icon
+            if (e.target.closest(".carousel-nav") || e.target.closest(".zoom-icon")) return;
+
+            clearInterval(autoSlideInterval);
+            startX = e.touches[0].clientX;
+            currentX = startX;
+            isDragging = true;
+            inner.style.transition = "none";
+        }, { passive: true });
+
+        carousel.addEventListener("mousedown", (e) => {
+            // FIX: Ignore drag logic completely if the user clicks the zoom icon
+            if (e.target.closest(".carousel-nav") || e.target.closest(".zoom-icon")) return;
+
+            clearInterval(autoSlideInterval);
+            startX = e.clientX;
+            currentX = startX;
+            isDragging = true;
+            inner.style.transition = "none";
+            carousel.style.cursor = "grabbing";
+            e.preventDefault();
+        });
+
+        carousel.addEventListener("touchmove", (e) => {
+            if (!isDragging) return;
+            currentX = e.touches[0].clientX;
+            deltaX = currentX - startX;
+            inner.style.transform = `translateX(calc(-${currentIndex * 100}% + ${deltaX}px))`;
+        }, { passive: true });
+
+        carousel.addEventListener("mousemove", (e) => {
+            if (!isDragging) return;
+            currentX = e.clientX;
+            deltaX = currentX - startX;
+            inner.style.transform = `translateX(calc(-${currentIndex * 100}% + ${deltaX}px))`;
+        });
+
+        function endDrag() {
+            if (!isDragging) return;
+            isDragging = false;
+
+            const threshold = 50;
+
+            if (deltaX > threshold && currentIndex > 0) {
+                currentIndex--;
+            } else if (deltaX < -threshold && currentIndex < allItems.length - 1) {
+                currentIndex++;
+            }
+
+            inner.style.transition = "transform 0.3s ease-in-out";
+            inner.style.transform = `translateX(-${currentIndex * 100}%)`;
+
+            setTimeout(() => {
+                if (currentIndex === 0) {
+                    inner.style.transition = "none";
+                    currentIndex = allItems.length - 2;
+                    inner.style.transform = `translateX(-${currentIndex * 100}%)`;
+                } else if (currentIndex === allItems.length - 1) {
+                    inner.style.transition = "none";
+                    currentIndex = 1;
+                    inner.style.transform = `translateX(-${currentIndex * 100}%)`;
+                }
+            }, 350);
+
+            setTimeout(() => {
+                startAutoSlide();
+            }, 500);
+
+            carousel.style.cursor = "grab";
+        }
+
+        carousel.addEventListener("touchend", endDrag);
+        carousel.addEventListener("mouseup", endDrag);
+        carousel.addEventListener("mouseleave", () => {
+            if (isDragging) endDrag();
+        });
+
+        setTimeout(() => {
+            startAutoSlide();
+        }, 50);
+    });
+
+    /* --- Full Hardware-Accelerated Sliding Lightbox Logic --- */
+    document.addEventListener("DOMContentLoaded", () => {
+        const lightbox = document.getElementById('lightbox');
+        const track = document.getElementById('lightbox-track');
+        const closeBtn = document.querySelector('.lightbox-close');
+        const nextBtn = document.querySelector('.lightbox-next');
+        const prevBtn = document.querySelector('.lightbox-prev');
+        const carouselItems = document.querySelectorAll('.carousel-item');
+
+        let currentLightboxImages = [];
+        let currentLightboxIndex = 0;
+
+        const setupLightboxSlides = () => {
+            track.innerHTML = '';
+            currentLightboxImages.forEach(src => {
+                const slide = document.createElement('div');
+                slide.className = 'lightbox-slide';
+                const img = document.createElement('img');
+                img.src = src;
+                slide.appendChild(img);
+                track.appendChild(slide);
+            });
+            updateLightboxPosition(true);
+        };
+
+        const updateLightboxPosition = (immediate = false) => {
+            if (immediate) {
+                track.style.transition = "none";
+            } else {
+                track.style.transition = "transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
+            }
+            track.style.transform = `translateX(-${currentLightboxIndex * 100}%)`;
+        };
+
+        const nextLightboxImage = (e) => {
+            if (e) e.stopPropagation();
+            if (currentLightboxImages.length <= 1) return;
+            currentLightboxIndex = (currentLightboxIndex + 1) % currentLightboxImages.length;
+            updateLightboxPosition();
+        };
+
+        const prevLightboxImage = (e) => {
+            if (e) e.stopPropagation();
+            if (currentLightboxImages.length <= 1) return;
+            currentLightboxIndex = (currentLightboxIndex - 1 + currentLightboxImages.length) % currentLightboxImages.length;
+            updateLightboxPosition();
+        };
+
+        carouselItems.forEach(item => {
+            let startX, currentX;
+
+            item.addEventListener('mousedown', (e) => startX = e.clientX);
+            item.addEventListener('touchstart', (e) => startX = e.touches[0].clientX, { passive: true });
+
+            // Helper function to actually open the lightbox
+            const openLightboxForThisItem = () => {
+                const img = item.querySelector('img');
+                if (img) {
+                    const inner = item.closest('.carousel-inner');
+                    const allItems = Array.from(inner.children);
+                    const originalItems = allItems.slice(1, -1);
+
+                    currentLightboxImages = originalItems.map(node => node.querySelector('img').src);
+                    currentLightboxIndex = currentLightboxImages.indexOf(img.src);
+
+                    if (currentLightboxIndex === -1) {
+                        const filename = img.src.split('/').pop();
+                        currentLightboxIndex = currentLightboxImages.findIndex(src => src.endsWith(filename));
+                        if (currentLightboxIndex === -1) currentLightboxIndex = 0;
+                    }
+
+                    setupLightboxSlides();
+                    lightbox.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                }
             };
 
-            closeBtn.addEventListener('click', closeLightbox);
-            nextBtn.addEventListener('click', nextLightboxImage);
-            prevBtn.addEventListener('click', prevLightboxImage);
+            // FIX: Give the zoom icon a dedicated, high-priority click handler
+            const zoomIcon = item.querySelector('.zoom-icon');
+            if (zoomIcon) {
+                const handleZoomTap = (e) => {
+                    e.preventDefault();
+                    e.stopPropagation(); // Stop the touch from bubbling to the carousel arrows
+                    openLightboxForThisItem();
+                };
 
-            // Fix 1: Optimized Backdrop Click-to-Close Interceptor
-            lightbox.addEventListener('click', (e) => {
-                if (e.target.tagName !== 'IMG' && !e.target.closest('button') && !e.target.classList.contains('lightbox-close')) {
-                    closeLightbox();
+                zoomIcon.addEventListener('click', handleZoomTap);
+                zoomIcon.addEventListener('touchend', handleZoomTap);
+            }
+
+            // Standard click handler for the rest of the image (Desktop mainly)
+            const handleClick = (e) => {
+                // If they clicked the zoom icon, ignore it here (handled above)
+                if (e.target.closest('.zoom-icon')) return;
+
+                // On mobile screens, tapping the image itself does nothing to prevent accidental fires
+                if (window.innerWidth <= 768) return;
+
+                currentX = e.clientX || (e.changedTouches ? e.changedTouches[0].clientX : startX);
+                const diff = Math.abs(currentX - startX);
+
+                if (diff < 10) {
+                    openLightboxForThisItem();
                 }
-            });
+            };
 
-            // Fluid Swiping inside Fullscreen Lightbox
-            let lightboxTouchStartX = 0;
-            let lightboxTouchEndX = 0;
-
-            lightbox.addEventListener('touchstart', (e) => {
-                lightboxTouchStartX = e.changedTouches[0].clientX;
-            }, { passive: true });
-
-            lightbox.addEventListener('touchend', (e) => {
-                lightboxTouchEndX = e.changedTouches[0].clientX;
-                const swipeThreshold = 50;
-
-                if (lightboxTouchEndX < lightboxTouchStartX - swipeThreshold) {
-                    nextLightboxImage();
-                } else if (lightboxTouchEndX > lightboxTouchStartX + swipeThreshold) {
-                    prevLightboxImage();
-                }
-            }, { passive: true });
-
-            document.addEventListener('keydown', (e) => {
-                if (lightbox.classList.contains('active')) {
-                    if (e.key === "Escape") closeLightbox();
-                    if (e.key === "ArrowRight") nextLightboxImage();
-                    if (e.key === "ArrowLeft") prevLightboxImage();
-                }
-            });
+            item.addEventListener('mouseup', handleClick);
+            item.addEventListener('touchend', handleClick);
         });
+
+        const closeLightbox = () => {
+            lightbox.classList.remove('active');
+            document.body.style.overflow = 'auto';
+            setTimeout(() => { if (!lightbox.classList.contains('active')) track.innerHTML = ""; }, 300);
+        };
+
+        closeBtn.addEventListener('click', closeLightbox);
+        nextBtn.addEventListener('click', nextLightboxImage);
+        prevBtn.addEventListener('click', prevLightboxImage);
+
+        lightbox.addEventListener('click', (e) => {
+            if (e.target.tagName !== 'IMG' && !e.target.closest('button') && !e.target.classList.contains('lightbox-close')) {
+                closeLightbox();
+            }
+        });
+
+        let lightboxTouchStartX = 0;
+        let lightboxTouchEndX = 0;
+
+        lightbox.addEventListener('touchstart', (e) => {
+            lightboxTouchStartX = e.changedTouches[0].clientX;
+        }, { passive: true });
+
+        lightbox.addEventListener('touchend', (e) => {
+            lightboxTouchEndX = e.changedTouches[0].clientX;
+            const swipeThreshold = 50;
+
+            if (lightboxTouchEndX < lightboxTouchStartX - swipeThreshold) {
+                nextLightboxImage();
+            } else if (lightboxTouchEndX > lightboxTouchStartX + swipeThreshold) {
+                prevLightboxImage();
+            }
+        }, { passive: true });
+
+        document.addEventListener('keydown', (e) => {
+            if (lightbox.classList.contains('active')) {
+                if (e.key === "Escape") closeLightbox();
+                if (e.key === "ArrowRight") nextLightboxImage();
+                if (e.key === "ArrowLeft") prevLightboxImage();
+            }
+        });
+    });
     </script>
 </body>
 
