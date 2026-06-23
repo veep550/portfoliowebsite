@@ -173,6 +173,28 @@
                 right: 10px;
             }
         }
+
+        /* UI Optimized Styles for the Strengths Grid */
+        .strengths-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 2rem;
+            padding-top: 1.5rem;
+        }
+
+        .strength-card h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #111;
+        }
+
+        .strength-card p {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: #555;
+            margin: 0;
+        }
     </style>
 </head>
 
@@ -195,6 +217,7 @@
                 <nav class="nav-links">
                     <a href="#hello">Hello</a>
                     <a href="#experience">Experience</a>
+                    <a href="#strengths">Strengths</a>
                     <a href="#about">About</a>
                 </nav>
                 <div class="contact-links">
@@ -546,6 +569,29 @@
                     </div>
                 </section>
 
+                <section id="strengths">
+                    <h3 class="section-title">Core Strengths</h3>
+                    <hr />
+                    <div class="strengths-grid">
+                        <div class="strength-card">
+                            <h4>Project Management</h4>
+                            <p>Confident leading creative teams and managing timelines from concept to delivery.</p>
+                        </div>
+                        <div class="strength-card">
+                            <h4>Collaboration</h4>
+                            <p>Experienced working with marketing, development, and community partners.</p>
+                        </div>
+                        <div class="strength-card">
+                            <h4>Creative Strategy</h4>
+                            <p>Skilled at combining innovation with clear, consistent brand design.</p>
+                        </div>
+                        <div class="strength-card">
+                            <h4>Inclusive Design</h4>
+                            <p>Committed to socially conscious work that respects cultural and community values.</p>
+                        </div>
+                    </div>
+                </section>
+
                 <section id="about" class="about-section">
                     <h3 class="section-title">About</h3>
                     <hr />
@@ -582,18 +628,6 @@
                                 soccer ball, catching a late-night movie, or hanging out with
                                 my family & a few friends.
                             </p>
-                            <h4 style="margin-top: 2rem; margin-bottom: 1rem; font-size: 1.2rem; font-weight: 600;">Core
-                                Strengths</h4>
-                            <ul style="list-style-type: none; padding-left: 0; margin-bottom: 2rem;">
-                                <li style="margin-bottom: 0.5rem;"><strong>Project Management:</strong> Confident
-                                    leading creative teams and managing timelines from concept to delivery</li>
-                                <li style="margin-bottom: 0.5rem;"><strong>Collaboration:</strong> Experienced working
-                                    with marketing, development, and community partners</li>
-                                <li style="margin-bottom: 0.5rem;"><strong>Creative Strategy:</strong> Skilled at
-                                    combining innovation with clear, consistent brand design</li>
-                                <li style="margin-bottom: 0.5rem;"><strong>Inclusive Design:</strong> Committed to
-                                    socially conscious work that respects cultural and community values</li>
-                            </ul>
                         </div>
                     </div>
                 </section>
@@ -739,32 +773,32 @@
         });
 
         document.addEventListener("DOMContentLoaded", () => {
-                setTimeout(() => {
-                    const h2 = document.getElementById("cascading-text");
-                    if (!h2) return;
+            setTimeout(() => {
+                const h2 = document.getElementById("cascading-text");
+                if (!h2) return;
 
-                    const greetingSpan = h2.querySelector(".cascade-word");
+                const greetingSpan = h2.querySelector(".cascade-word");
 
-                    if (greetingSpan && greetingSpan.textContent.includes("Hi")) {
-                        const greetings = ["Hi,", "Salām,", "سَلَام,"];
-                        let currentIndex = 0;
+                if (greetingSpan && greetingSpan.textContent.includes("Hi")) {
+                    const greetings = ["Hi,", "Salām,", "سَلَام,"];
+                    let currentIndex = 0;
 
-                        // Function to update the text
-                        const changeGreeting = () => {
-                            currentIndex = (currentIndex + 1) % greetings.length;
-                            greetingSpan.textContent = greetings[currentIndex];
-                        };
+                    // Function to update the text
+                    const changeGreeting = () => {
+                        currentIndex = (currentIndex + 1) % greetings.length;
+                        greetingSpan.textContent = greetings[currentIndex];
+                    };
 
-                        // 1. Trigger the FIRST change after 500ms
-                        setTimeout(() => {
-                            changeGreeting();
+                    // 1. Trigger the FIRST change after 500ms
+                    setTimeout(() => {
+                        changeGreeting();
 
-                            // 2. Once the first change happens, start the 1800ms loop
-                            setInterval(changeGreeting, 1800);
-                        }, 500);
-                    }
-                }, 10);
-            });
+                        // 2. Once the first change happens, start the 1800ms loop
+                        setInterval(changeGreeting, 1800);
+                    }, 500);
+                }
+            }, 10);
+        });
 
         const carousels = document.querySelectorAll(".carousel");
 
