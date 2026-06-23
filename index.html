@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Hamza Ali - Designer</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
@@ -13,7 +13,6 @@
 
     <style>
         /* --- New Lightbox & Zoom Icon Styles --- */
-
         .carousel-item {
             position: relative;
             cursor: pointer;
@@ -81,6 +80,7 @@
             justify-content: center;
             opacity: 0;
             transition: opacity 0.3s ease;
+            touch-action: none;
         }
 
         .lightbox.active {
@@ -117,14 +117,53 @@
             box-sizing: border-box;
         }
 
-        .lightbox-slide img {
-            max-width: 90%;
-            max-height: 85vh;
+        /* NEW: Wrapper that perfectly hugs the image boundaries */
+        .lightbox-img-wrapper {
+            position: relative;
+            display: inline-block;
+            margin: auto;
             border-radius: 4px;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+            transform-origin: center center;
+        }
+
+        .lightbox-img-wrapper img {
+            display: block;
+            max-width: 90vw;
+            max-height: 85vh;
+            width: auto;
+            height: auto;
+            border-radius: 4px;
             object-fit: contain;
             user-select: none;
             -webkit-user-drag: none;
+        }
+
+        /* NEW: Button pinned to the wrapper's top right corner */
+        .lightbox-img-wrapper .lightbox-zoom-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            font-size: 1.15rem;
+            transform-origin: top right;
+            /* Allows inverse scaling to anchor to the corner */
+            transition: background 0.3s ease;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .lightbox-img-wrapper .lightbox-zoom-btn:hover {
+            background: rgba(0, 0, 0, 0.9);
         }
 
         .lightbox-close {
@@ -176,7 +215,6 @@
             right: 30px;
         }
 
-        /* UI Optimized Styles for the Strengths Grid */
         .strengths-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -198,9 +236,6 @@
             margin: 0;
         }
 
-        /* -------------------------------------------------------------------------
-           GLOBAL DEADSPACE REMOVAL (Fixes layout gaps caused by css/styles.css)
-        ------------------------------------------------------------------------- */
         #experience {
             margin-bottom: 0rem !important;
             padding-bottom: 0rem !important;
@@ -247,18 +282,21 @@
                 right: 10px;
             }
 
-            .zoom-icon {
-                display: flex !important;
-                /* Update 1: Made visible on mobile */
-                opacity: 1;
-                /* Make it always visible on touch devices */
-                z-index: 20;
-                /* Ensure it's clickable above the overlay */
-                pointer-events: auto;
-                /* Re-enable pointer events so it can be tapped */
+            .lightbox-img-wrapper .lightbox-zoom-btn {
+                width: 34px;
+                height: 34px;
+                top: 10px;
+                right: 10px;
+                font-size: 1rem;
             }
 
-            /* Extra tight structural squeeze specifically for mobile screens */
+            .zoom-icon {
+                display: flex !important;
+                opacity: 1;
+                z-index: 20;
+                pointer-events: auto;
+            }
+
             #strengths {
                 padding-top: 0.5rem !important;
                 padding-bottom: 0.5rem !important;
@@ -735,6 +773,7 @@
 
     <div id="lightbox" class="lightbox">
         <span class="lightbox-close">&times;</span>
+        <!-- Removed global zoom button. It is now dynamically appended to the image itself -->
         <button class="lightbox-prev"><i class="fas fa-chevron-left"></i></button>
         <div class="lightbox-slider-container">
             <div class="lightbox-slider-track" id="lightbox-track"></div>
@@ -743,317 +782,316 @@
     </div>
 
     <script>
-    //Arrows on nav links
-    document.addEventListener("DOMContentLoaded", () => {
-        const sections = document.querySelectorAll("main section");
-        const navLinks = document.querySelectorAll(".nav-links a");
+        window.isLightboxActive = false;
 
-        function onScroll() {
-            let currentId = null;
+        document.addEventListener("DOMContentLoaded", () => {
+            const sections = document.querySelectorAll("main section");
+            const navLinks = document.querySelectorAll(".nav-links a");
 
-            const scrollPosition = window.scrollY + 150;
+            function onScroll() {
+                let currentId = null;
 
-            for (let i = 0; i < sections.length; i++) {
-                const section = sections[i];
-                const offsetTop = section.offsetTop;
-                const offsetHeight = section.offsetHeight;
+                const scrollPosition = window.scrollY + 150;
 
-                if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
-                    currentId = section.id;
-                    break;
+                for (let i = 0; i < sections.length; i++) {
+                    const section = sections[i];
+                    const offsetTop = section.offsetTop;
+                    const offsetHeight = section.offsetHeight;
+
+                    if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
+                        currentId = section.id;
+                        break;
+                    }
+                }
+
+                if (currentId) {
+                    navLinks.forEach(link => {
+                        link.classList.remove("active");
+                        if (link.getAttribute("href") === `#${currentId}`) {
+                            link.classList.add("active");
+                        }
+                    });
                 }
             }
 
-            if (currentId) {
-                navLinks.forEach(link => {
-                    link.classList.remove("active");
-                    if (link.getAttribute("href") === `#${currentId}`) {
-                        link.classList.add("active");
-                    }
-                });
-            }
-        }
-
-        window.addEventListener("scroll", onScroll);
-        onScroll();
-    });
-
-    //Simple Cascade Effect SCript
-    document.addEventListener("DOMContentLoaded", () => {
-        const h2 = document.getElementById("cascading-text");
-
-        const originalHTML = h2.innerHTML;
-        const tempDiv = document.createElement("div");
-        tempDiv.innerHTML = originalHTML;
-
-        const newContent = [];
-
-        tempDiv.childNodes.forEach((node) => {
-            if (node.nodeType === Node.TEXT_NODE) {
-                const words = node.textContent.split(/(\s+)/);
-                words.forEach((word) => {
-                    if (word.trim() === "") {
-                        newContent.push(document.createTextNode(word));
-                    } else {
-                        const span = document.createElement("span");
-                        span.className = "cascade-word";
-                        span.textContent = word;
-                        newContent.push(span);
-                        newContent.push(document.createTextNode(" "));
-                    }
-                });
-            } else if (node.nodeName === "BR") {
-                newContent.push(document.createElement("br"));
-            }
+            window.addEventListener("scroll", onScroll);
+            onScroll();
         });
 
-        h2.innerHTML = "";
-        newContent.forEach((el) => h2.appendChild(el));
+        document.addEventListener("DOMContentLoaded", () => {
+            const h2 = document.getElementById("cascading-text");
 
-        const spans = [...h2.querySelectorAll(".cascade-word")];
-        const lines = [];
-        let currentTop = null;
-        let isDraggingLine = false;
-        let currentLine = [];
+            const originalHTML = h2.innerHTML;
+            const tempDiv = document.createElement("div");
+            tempDiv.innerHTML = originalHTML;
 
-        spans.forEach((span) => {
-            const top = span.offsetTop;
-            if (currentTop === null) currentTop = top;
+            const newContent = [];
 
-            if (top !== currentTop) {
-                lines.push(currentLine);
-                currentLine = [span];
-                currentTop = top;
-            } else {
-                currentLine.push(span);
-            }
-        });
+            tempDiv.childNodes.forEach((node) => {
+                if (node.nodeType === Node.TEXT_NODE) {
+                    const words = node.textContent.split(/(\s+)/);
+                    words.forEach((word) => {
+                        if (word.trim() === "") {
+                            newContent.push(document.createTextNode(word));
+                        } else {
+                            const span = document.createElement("span");
+                            span.className = "cascade-word";
+                            span.textContent = word;
+                            newContent.push(span);
+                            newContent.push(document.createTextNode(" "));
+                        }
+                    });
+                } else if (node.nodeName === "BR") {
+                    newContent.push(document.createElement("br"));
+                }
+            });
 
-        if (currentLine.length > 0) lines.push(currentLine);
+            h2.innerHTML = "";
+            newContent.forEach((el) => h2.appendChild(el));
 
-        lines.forEach((line, lineIndex) => {
-            line.forEach((span, wordIndex) => {
-                span.style.animationDelay = `${lineIndex * 0.1 + wordIndex * 0.01}s`;
+            const spans = [...h2.querySelectorAll(".cascade-word")];
+            const lines = [];
+            let currentTop = null;
+            let isDraggingLine = false;
+            let currentLine = [];
+
+            spans.forEach((span) => {
+                const top = span.offsetTop;
+                if (currentTop === null) currentTop = top;
+
+                if (top !== currentTop) {
+                    lines.push(currentLine);
+                    currentLine = [span];
+                    currentTop = top;
+                } else {
+                    currentLine.push(span);
+                }
+            });
+
+            if (currentLine.length > 0) lines.push(currentLine);
+
+            lines.forEach((line, lineIndex) => {
+                line.forEach((span, wordIndex) => {
+                    span.style.animationDelay = `${lineIndex * 0.1 + wordIndex * 0.01}s`;
+                });
             });
         });
-    });
 
-    //Simple Scrolling SCript
-    let lastScrollY = 0;
-    let ticking = false;
+        let lastScrollY = 0;
+        let ticking = false;
 
-    function updateHeader() {
-        const header = document.querySelector(".site-header");
-        if (lastScrollY > 10) {
-            header.classList.add("scrolled");
-        } else {
-            header.classList.remove("scrolled");
+        function updateHeader() {
+            const header = document.querySelector(".site-header");
+            if (lastScrollY > 10) {
+                header.classList.add("scrolled");
+            } else {
+                header.classList.remove("scrolled");
+            }
+            ticking = false;
         }
-        ticking = false;
-    }
 
-    window.addEventListener("scroll", () => {
-        lastScrollY = window.scrollY;
-        if (!ticking) {
-            window.requestAnimationFrame(updateHeader);
-            ticking = true;
-        }
-    });
+        window.addEventListener("scroll", () => {
+            lastScrollY = window.scrollY;
+            if (!ticking) {
+                window.requestAnimationFrame(updateHeader);
+                ticking = true;
+            }
+        });
 
-    document.addEventListener("DOMContentLoaded", () => {
-        setTimeout(() => {
-            const h2 = document.getElementById("cascading-text");
-            if (!h2) return;
+        document.addEventListener("DOMContentLoaded", () => {
+            setTimeout(() => {
+                const h2 = document.getElementById("cascading-text");
+                if (!h2) return;
 
-            const greetingSpan = h2.querySelector(".cascade-word");
+                const greetingSpan = h2.querySelector(".cascade-word");
 
-            if (greetingSpan && greetingSpan.textContent.includes("Salām")) {
-                const greetings = ["Salām,", "Hi,", "سَلَام,"];
-                let currentIndex = 0;
+                if (greetingSpan && greetingSpan.textContent.includes("Salām")) {
+                    const greetings = ["Salām,", "Hi,", "سَلَام,"];
+                    let currentIndex = 0;
 
-                const changeGreeting = () => {
-                    currentIndex = (currentIndex + 1) % greetings.length;
-                    greetingSpan.textContent = greetings[currentIndex];
-                };
+                    const changeGreeting = () => {
+                        currentIndex = (currentIndex + 1) % greetings.length;
+                        greetingSpan.textContent = greetings[currentIndex];
+                    };
+
+                    setTimeout(() => {
+                        changeGreeting();
+                        setInterval(changeGreeting, 1300);
+                    }, 500);
+                }
+            }, 10);
+        });
+
+        const carousels = document.querySelectorAll(".carousel");
+
+        carousels.forEach((carousel) => {
+            const inner = carousel.querySelector(".carousel-inner");
+            const items = carousel.querySelectorAll(".carousel-item");
+
+            const prevBtn = carousel.querySelector(".prev");
+            const nextBtn = carousel.querySelector(".next");
+
+            const firstClone = items[0].cloneNode(true);
+            const lastClone = items[items.length - 1].cloneNode(true);
+
+            inner.insertBefore(lastClone, items[0]);
+            inner.appendChild(firstClone);
+
+            const allItems = carousel.querySelectorAll(".carousel-item");
+            let currentIndex = 1;
+            let transitioning = false;
+
+            inner.style.transition = "none";
+            inner.style.transform = `translateX(-${currentIndex * 100}%)`;
+            requestAnimationFrame(() => {
+                inner.style.transition = "transform 0.5s ease";
+            });
+
+            let autoSlideInterval;
+
+            function startAutoSlide() {
+                clearInterval(autoSlideInterval);
+                autoSlideInterval = setInterval(() => {
+                    if (window.isLightboxActive) {
+                        return;
+                    }
+
+                    next();
+                }, 4000);
+            }
+
+            function goTo(index) {
+                if (transitioning) return;
+                transitioning = true;
+
+                inner.style.transition = "transform 0.5s ease";
+                inner.style.transform = `translateX(-${index * 100}%)`;
+                currentIndex = index;
 
                 setTimeout(() => {
-                    changeGreeting();
-                    setInterval(changeGreeting, 1300);
+                    if (currentIndex === allItems.length - 1) {
+                        inner.style.transition = "none";
+                        currentIndex = 1;
+                        inner.style.transform = `translateX(-${currentIndex * 100}%)`;
+                    }
+
+                    if (currentIndex === 0) {
+                        inner.style.transition = "none";
+                        currentIndex = allItems.length - 2;
+                        inner.style.transform = `translateX(-${currentIndex * 100}%)`;
+                    }
+
+                    transitioning = false;
                 }, 500);
             }
-        }, 10);
-    });
 
-    const carousels = document.querySelectorAll(".carousel");
-
-    carousels.forEach((carousel) => {
-        const inner = carousel.querySelector(".carousel-inner");
-        const items = carousel.querySelectorAll(".carousel-item");
-
-        const prevBtn = carousel.querySelector(".prev");
-        const nextBtn = carousel.querySelector(".next");
-
-        const firstClone = items[0].cloneNode(true);
-        const lastClone = items[items.length - 1].cloneNode(true);
-
-        inner.insertBefore(lastClone, items[0]);
-        inner.appendChild(firstClone);
-
-        const allItems = carousel.querySelectorAll(".carousel-item");
-        let currentIndex = 1;
-        let transitioning = false;
-
-        inner.style.transition = "none";
-        inner.style.transform = `translateX(-${currentIndex * 100}%)`;
-        requestAnimationFrame(() => {
-            inner.style.transition = "transform 0.5s ease";
-        });
-
-        let autoSlideInterval;
-
-        function startAutoSlide() {
-            clearInterval(autoSlideInterval);
-            autoSlideInterval = setInterval(() => {
-                // Check if the lightbox is open. If it is, pause the auto-scroll.
-                const lightbox = document.getElementById('lightbox');
-                if (lightbox && lightbox.classList.contains('active')) {
-                    return;
-                }
-
-                next();
-            }, 4000);
-        }
-
-        function goTo(index) {
-            if (transitioning) return;
-            transitioning = true;
-
-            inner.style.transition = "transform 0.5s ease";
-            inner.style.transform = `translateX(-${index * 100}%)`;
-            currentIndex = index;
-
-            setTimeout(() => {
-                if (currentIndex === allItems.length - 1) {
-                    inner.style.transition = "none";
-                    currentIndex = 1;
-                    inner.style.transform = `translateX(-${currentIndex * 100}%)`;
-                }
-
-                if (currentIndex === 0) {
-                    inner.style.transition = "none";
-                    currentIndex = allItems.length - 2;
-                    inner.style.transform = `translateX(-${currentIndex * 100}%)`;
-                }
-
-                transitioning = false;
-            }, 500);
-        }
-
-        function next() {
-            goTo(currentIndex + 1);
-        }
-
-        function prev() {
-            goTo(currentIndex - 1);
-        }
-
-        function handleManualNav(fn) {
-            fn();
-            startAutoSlide();
-        }
-
-        nextBtn.addEventListener("click", () => handleManualNav(next));
-        prevBtn.addEventListener("click", () => handleManualNav(prev));
-
-        let startX = 0;
-        let currentX = 0;
-        let isDragging = false;
-        let deltaX = 0;
-
-        carousel.addEventListener("touchstart", (e) => {
-            // FIX: Ignore swipe logic completely if the user touches the zoom icon
-            if (e.target.closest(".carousel-nav") || e.target.closest(".zoom-icon")) return;
-
-            clearInterval(autoSlideInterval);
-            startX = e.touches[0].clientX;
-            currentX = startX;
-            isDragging = true;
-            inner.style.transition = "none";
-        }, { passive: true });
-
-        carousel.addEventListener("mousedown", (e) => {
-            // FIX: Ignore drag logic completely if the user clicks the zoom icon
-            if (e.target.closest(".carousel-nav") || e.target.closest(".zoom-icon")) return;
-
-            clearInterval(autoSlideInterval);
-            startX = e.clientX;
-            currentX = startX;
-            isDragging = true;
-            inner.style.transition = "none";
-            carousel.style.cursor = "grabbing";
-            e.preventDefault();
-        });
-
-        carousel.addEventListener("touchmove", (e) => {
-            if (!isDragging) return;
-            currentX = e.touches[0].clientX;
-            deltaX = currentX - startX;
-            inner.style.transform = `translateX(calc(-${currentIndex * 100}% + ${deltaX}px))`;
-        }, { passive: true });
-
-        carousel.addEventListener("mousemove", (e) => {
-            if (!isDragging) return;
-            currentX = e.clientX;
-            deltaX = currentX - startX;
-            inner.style.transform = `translateX(calc(-${currentIndex * 100}% + ${deltaX}px))`;
-        });
-
-        function endDrag() {
-            if (!isDragging) return;
-            isDragging = false;
-
-            const threshold = 50;
-
-            if (deltaX > threshold && currentIndex > 0) {
-                currentIndex--;
-            } else if (deltaX < -threshold && currentIndex < allItems.length - 1) {
-                currentIndex++;
+            function next() {
+                goTo(currentIndex + 1);
             }
 
-            inner.style.transition = "transform 0.3s ease-in-out";
-            inner.style.transform = `translateX(-${currentIndex * 100}%)`;
+            function prev() {
+                goTo(currentIndex - 1);
+            }
 
-            setTimeout(() => {
-                if (currentIndex === 0) {
-                    inner.style.transition = "none";
-                    currentIndex = allItems.length - 2;
-                    inner.style.transform = `translateX(-${currentIndex * 100}%)`;
-                } else if (currentIndex === allItems.length - 1) {
-                    inner.style.transition = "none";
-                    currentIndex = 1;
-                    inner.style.transform = `translateX(-${currentIndex * 100}%)`;
+            function handleManualNav(fn) {
+                fn();
+                startAutoSlide();
+            }
+
+            nextBtn.addEventListener("click", () => handleManualNav(next));
+            prevBtn.addEventListener("click", () => handleManualNav(prev));
+
+            let startX = 0;
+            let currentX = 0;
+            let isDragging = false;
+            let deltaX = 0;
+
+            carousel.addEventListener("touchstart", (e) => {
+                if (window.visualViewport && window.visualViewport.scale > 1.05) return;
+                if (e.touches && e.touches.length > 1) return;
+                if (e.target.closest(".carousel-nav") || e.target.closest(".zoom-icon")) return;
+
+                clearInterval(autoSlideInterval);
+                startX = e.touches[0].clientX;
+                currentX = startX;
+                isDragging = true;
+                inner.style.transition = "none";
+            }, { passive: true });
+
+            carousel.addEventListener("mousedown", (e) => {
+                if (e.target.closest(".carousel-nav") || e.target.closest(".zoom-icon")) return;
+
+                clearInterval(autoSlideInterval);
+                startX = e.clientX;
+                currentX = startX;
+                isDragging = true;
+                inner.style.transition = "none";
+                carousel.style.cursor = "grabbing";
+                e.preventDefault();
+            });
+
+            carousel.addEventListener("touchmove", (e) => {
+                if (window.visualViewport && window.visualViewport.scale > 1.05) return;
+                if (!isDragging || (e.touches && e.touches.length > 1)) return;
+
+                currentX = e.touches[0].clientX;
+                deltaX = currentX - startX;
+                inner.style.transform = `translateX(calc(-${currentIndex * 100}% + ${deltaX}px))`;
+            }, { passive: true });
+
+            carousel.addEventListener("mousemove", (e) => {
+                if (!isDragging) return;
+                currentX = e.clientX;
+                deltaX = currentX - startX;
+                inner.style.transform = `translateX(calc(-${currentIndex * 100}% + ${deltaX}px))`;
+            });
+
+            function endDrag() {
+                if (!isDragging) return;
+                isDragging = false;
+
+                const threshold = 50;
+
+                if (deltaX > threshold && currentIndex > 0) {
+                    currentIndex--;
+                } else if (deltaX < -threshold && currentIndex < allItems.length - 1) {
+                    currentIndex++;
                 }
-            }, 350);
+
+                inner.style.transition = "transform 0.3s ease-in-out";
+                inner.style.transform = `translateX(-${currentIndex * 100}%)`;
+
+                setTimeout(() => {
+                    if (currentIndex === 0) {
+                        inner.style.transition = "none";
+                        currentIndex = allItems.length - 2;
+                        inner.style.transform = `translateX(-${currentIndex * 100}%)`;
+                    } else if (currentIndex === allItems.length - 1) {
+                        inner.style.transition = "none";
+                        currentIndex = 1;
+                        inner.style.transform = `translateX(-${currentIndex * 100}%)`;
+                    }
+                }, 350);
+
+                setTimeout(() => {
+                    startAutoSlide();
+                }, 500);
+
+                carousel.style.cursor = "grab";
+            }
+
+            carousel.addEventListener("touchend", endDrag);
+            carousel.addEventListener("mouseup", endDrag);
+            carousel.addEventListener("mouseleave", () => {
+                if (isDragging) endDrag();
+            });
 
             setTimeout(() => {
                 startAutoSlide();
-            }, 500);
-
-            carousel.style.cursor = "grab";
-        }
-
-        carousel.addEventListener("touchend", endDrag);
-        carousel.addEventListener("mouseup", endDrag);
-        carousel.addEventListener("mouseleave", () => {
-            if (isDragging) endDrag();
+            }, 50);
         });
 
-        setTimeout(() => {
-            startAutoSlide();
-        }, 50);
-    });
-
-    /* --- Full Hardware-Accelerated Sliding Lightbox Logic --- */
+        /* --- Comprehensive Lightbox Zoom & Interaction Logic --- */
         document.addEventListener("DOMContentLoaded", () => {
             const lightbox = document.getElementById('lightbox');
             const track = document.getElementById('lightbox-track');
@@ -1063,15 +1101,81 @@
             const carouselItems = document.querySelectorAll('.carousel-item');
 
             let currentLightboxImages = [];
-            let currentLightboxIndex = 0; // Represents the logical index selected
-            let lightboxDomIndex = 1;     // Tracks the actual DOM slide (shifted by +1 because of clones)
-            let isLightboxTransitioning = false; // Prevents spam-clicking
+            let currentLightboxIndex = 0;
+            let lightboxDomIndex = 1;
+            let isLightboxTransitioning = false;
+
+            let scale = 1;
+            let panning = false;
+            let pointX = 0, pointY = 0;
+            let startX = 0, startY = 0;
+            let pinchStartDist = 0;
+            let pinchStartScale = 1;
+            let pinchStartPointX = 0, pinchStartPointY = 0;
+            let pinchCenterX = 0, pinchCenterY = 0;
+            let touchInteracted = false;
+            let tapStartX = 0, tapStartY = 0;
+            let lastTap = 0;
+
+            const updateZoomIcon = () => {
+                const activeWrapper = track.children[lightboxDomIndex]?.querySelector('.lightbox-img-wrapper');
+                if (!activeWrapper) return;
+                const btn = activeWrapper.querySelector('.lightbox-zoom-btn');
+                if (!btn) return;
+
+                const icon = btn.querySelector('i');
+                if (scale > 1.05) {
+                    icon.className = 'fas fa-compress';
+                } else {
+                    icon.className = 'fas fa-expand';
+                }
+            };
+
+            const resetZoomState = () => {
+                scale = 1;
+                pointX = 0;
+                pointY = 0;
+                const wrappers = track.querySelectorAll('.lightbox-img-wrapper');
+                wrappers.forEach(wrapper => {
+                    wrapper.style.transition = 'transform 0.3s ease';
+                    wrapper.style.transform = '';
+                    const btn = wrapper.querySelector('.lightbox-zoom-btn');
+                    if (btn) {
+                        btn.style.transition = 'transform 0.3s ease';
+                        btn.style.transform = 'scale(1)'; // Reset the inverse scale
+                    }
+                });
+                updateZoomIcon();
+            };
+
+            const zoomTo = (newScale, focalX, focalY) => {
+                const activeWrapper = track.children[lightboxDomIndex]?.querySelector('.lightbox-img-wrapper');
+                if (!activeWrapper) return;
+                const btn = activeWrapper.querySelector('.lightbox-zoom-btn');
+
+                const scaleRatio = newScale / scale;
+                const originX = focalX - window.innerWidth / 2;
+                const originY = focalY - window.innerHeight / 2;
+
+                pointX = originX - (originX - pointX) * scaleRatio;
+                pointY = originY - (originY - pointY) * scaleRatio;
+                scale = newScale;
+
+                activeWrapper.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                activeWrapper.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
+
+                if (btn) {
+                    btn.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                    btn.style.transform = `scale(${1 / scale})`; // Inverse Scale to keep button pinned and crisp
+                }
+
+                updateZoomIcon();
+            };
 
             const setupLightboxSlides = () => {
                 track.innerHTML = '';
                 if (currentLightboxImages.length === 0) return;
 
-                // Create clones for infinite loop effect
                 const firstSrc = currentLightboxImages[0];
                 const lastSrc = currentLightboxImages[currentLightboxImages.length - 1];
                 const slidesToRender = [lastSrc, ...currentLightboxImages, firstSrc];
@@ -1079,9 +1183,23 @@
                 slidesToRender.forEach(src => {
                     const slide = document.createElement('div');
                     slide.className = 'lightbox-slide';
+
+                    // Wrapper wraps tightly around the image
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'lightbox-img-wrapper';
+
                     const img = document.createElement('img');
                     img.src = src;
-                    slide.appendChild(img);
+
+                    // Button belongs to the wrapper now, perfectly positioned at the corner
+                    const btn = document.createElement('span');
+                    btn.className = 'lightbox-zoom-btn';
+                    btn.innerHTML = '<i class="fas fa-expand"></i>';
+                    btn.title = 'Toggle Zoom';
+
+                    wrapper.appendChild(img);
+                    wrapper.appendChild(btn);
+                    slide.appendChild(wrapper);
                     track.appendChild(slide);
                 });
 
@@ -1098,7 +1216,6 @@
                 track.style.transform = `translateX(-${lightboxDomIndex * 100}%)`;
             };
 
-            // Instantly snap to the real images when reaching a cloned edge
             track.addEventListener('transitionend', () => {
                 isLightboxTransitioning = false;
                 if (lightboxDomIndex === 0) {
@@ -1113,6 +1230,7 @@
             const nextLightboxImage = (e) => {
                 if (e) e.stopPropagation();
                 if (currentLightboxImages.length <= 1 || isLightboxTransitioning) return;
+                resetZoomState();
                 isLightboxTransitioning = true;
                 lightboxDomIndex++;
                 updateLightboxPosition();
@@ -1121,16 +1239,151 @@
             const prevLightboxImage = (e) => {
                 if (e) e.stopPropagation();
                 if (currentLightboxImages.length <= 1 || isLightboxTransitioning) return;
+                resetZoomState();
                 isLightboxTransitioning = true;
                 lightboxDomIndex--;
                 updateLightboxPosition();
             };
 
-            carouselItems.forEach(item => {
-                let startX, currentX;
+            // Unified Event Listener for the dynamic expand button
+            track.addEventListener('click', (e) => {
+                const zoomBtnClick = e.target.closest('.lightbox-zoom-btn');
+                if (zoomBtnClick) {
+                    e.stopPropagation();
+                    if (scale > 1) {
+                        resetZoomState();
+                    } else {
+                        zoomTo(2.5, window.innerWidth / 2, window.innerHeight / 2);
+                    }
+                }
+            });
 
-                item.addEventListener('mousedown', (e) => startX = e.clientX);
-                item.addEventListener('touchstart', (e) => startX = e.touches[0].clientX, { passive: true });
+            lightbox.addEventListener('dblclick', (e) => {
+                if (e.target.closest('.lightbox-zoom-btn')) return; // Ignore if double clicking the button itself
+                if (e.target.tagName !== 'IMG') return;
+                if (scale > 1) {
+                    resetZoomState();
+                } else {
+                    zoomTo(2.5, e.clientX, e.clientY);
+                }
+            });
+
+            function updateTouches(e) {
+                if (e.target.closest('button') || e.target.classList.contains('lightbox-close') || e.target.closest('.lightbox-zoom-btn')) return;
+
+                if (e.type === 'touchstart' && e.touches.length === 1) {
+                    touchInteracted = false;
+                    tapStartX = e.touches[0].clientX;
+                    tapStartY = e.touches[0].clientY;
+                }
+
+                if (e.touches.length === 2) {
+                    panning = false;
+                    pinchStartDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+                    pinchStartScale = scale;
+                    pinchStartPointX = pointX;
+                    pinchStartPointY = pointY;
+                    pinchCenterX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+                    pinchCenterY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+                } else if (e.touches.length === 1) {
+                    if (scale > 1) {
+                        panning = true;
+                        startX = e.touches[0].clientX - pointX;
+                        startY = e.touches[0].clientY - pointY;
+                    }
+                } else {
+                    panning = false;
+
+                    if (e.type === 'touchend' && e.changedTouches.length === 1) {
+                        if (e.target.tagName === 'IMG') {
+                            const currentTime = new Date().getTime();
+                            const tapLength = currentTime - lastTap;
+                            if (tapLength < 300 && tapLength > 0 && !touchInteracted) {
+                                if (scale > 1) {
+                                    resetZoomState();
+                                } else {
+                                    zoomTo(2.5, tapStartX, tapStartY);
+                                }
+                                e.preventDefault();
+                            } else if (scale < 1.05) {
+                                resetZoomState();
+                            }
+                            lastTap = currentTime;
+                        } else if (scale < 1.05) {
+                            resetZoomState();
+                        }
+                    }
+                }
+            }
+
+            function handleTouchMove(e) {
+                if (e.target.closest('button') || e.target.classList.contains('lightbox-close') || e.target.closest('.lightbox-zoom-btn')) return;
+
+                const activeWrapper = track.children[lightboxDomIndex]?.querySelector('.lightbox-img-wrapper');
+                const activeBtn = activeWrapper?.querySelector('.lightbox-zoom-btn');
+                if (!activeWrapper) return;
+
+                if (e.touches.length === 1) {
+                    if (Math.abs(e.touches[0].clientX - tapStartX) > 5 || Math.abs(e.touches[0].clientY - tapStartY) > 5) {
+                        touchInteracted = true;
+                    }
+                } else {
+                    touchInteracted = true;
+                }
+
+                if (e.touches.length === 2) {
+                    e.preventDefault();
+                    const currentDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+                    const newScale = Math.min(Math.max(1, pinchStartScale * (currentDist / pinchStartDist)), 5);
+                    const scaleRatio = newScale / pinchStartScale;
+
+                    const originX = pinchCenterX - window.innerWidth / 2;
+                    const originY = pinchCenterY - window.innerHeight / 2;
+
+                    pointX = originX - (originX - pinchStartPointX) * scaleRatio;
+                    pointY = originY - (originY - pinchStartPointY) * scaleRatio;
+
+                    const currentCenterX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+                    const currentCenterY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+                    pointX += (currentCenterX - pinchCenterX);
+                    pointY += (currentCenterY - pinchCenterY);
+
+                    scale = newScale;
+                    activeWrapper.style.transition = 'none';
+                    activeWrapper.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
+
+                    if (activeBtn) {
+                        activeBtn.style.transition = 'none';
+                        activeBtn.style.transform = `scale(${1 / scale})`;
+                    }
+                    updateZoomIcon();
+
+                } else if (e.touches.length === 1 && panning && scale > 1) {
+                    e.preventDefault();
+                    pointX = e.touches[0].clientX - startX;
+                    pointY = e.touches[0].clientY - startY;
+
+                    activeWrapper.style.transition = 'none';
+                    activeWrapper.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
+                }
+            }
+
+            lightbox.addEventListener('touchstart', updateTouches, { passive: false });
+            lightbox.addEventListener('touchmove', handleTouchMove, { passive: false });
+            lightbox.addEventListener('touchend', updateTouches, { passive: false });
+
+            lightbox.addEventListener('click', (e) => {
+                if (touchInteracted) return;
+                if (e.target.tagName !== 'IMG' && !e.target.closest('button') && !e.target.classList.contains('lightbox-close') && !e.target.closest('.lightbox-zoom-btn')) {
+                    closeLightbox();
+                }
+            });
+
+            carouselItems.forEach(item => {
+                let itemStartX, itemCurrentX;
+
+                item.addEventListener('mousedown', (e) => itemStartX = e.clientX);
+                item.addEventListener('touchstart', (e) => itemStartX = e.touches[0].clientX, { passive: true });
 
                 const openLightboxForThisItem = () => {
                     const img = item.querySelector('img');
@@ -1148,6 +1401,8 @@
                             if (currentLightboxIndex === -1) currentLightboxIndex = 0;
                         }
 
+                        window.isLightboxActive = true;
+                        resetZoomState();
                         setupLightboxSlides();
                         lightbox.classList.add('active');
                         document.body.style.overflow = 'hidden';
@@ -1170,8 +1425,8 @@
                     if (e.target.closest('.zoom-icon')) return;
                     if (window.innerWidth <= 768) return;
 
-                    currentX = e.clientX || (e.changedTouches ? e.changedTouches[0].clientX : startX);
-                    const diff = Math.abs(currentX - startX);
+                    itemCurrentX = e.clientX || (e.changedTouches ? e.changedTouches[0].clientX : itemStartX);
+                    const diff = Math.abs(itemCurrentX - itemStartX);
 
                     if (diff < 10) {
                         openLightboxForThisItem();
@@ -1183,6 +1438,8 @@
             });
 
             const closeLightbox = () => {
+                window.isLightboxActive = false;
+                resetZoomState();
                 lightbox.classList.remove('active');
                 document.body.style.overflow = 'auto';
                 setTimeout(() => { if (!lightbox.classList.contains('active')) track.innerHTML = ""; }, 300);
@@ -1191,30 +1448,6 @@
             closeBtn.addEventListener('click', closeLightbox);
             nextBtn.addEventListener('click', nextLightboxImage);
             prevBtn.addEventListener('click', prevLightboxImage);
-
-            lightbox.addEventListener('click', (e) => {
-                if (e.target.tagName !== 'IMG' && !e.target.closest('button') && !e.target.classList.contains('lightbox-close')) {
-                    closeLightbox();
-                }
-            });
-
-            let lightboxTouchStartX = 0;
-            let lightboxTouchEndX = 0;
-
-            lightbox.addEventListener('touchstart', (e) => {
-                lightboxTouchStartX = e.changedTouches[0].clientX;
-            }, { passive: true });
-
-            lightbox.addEventListener('touchend', (e) => {
-                lightboxTouchEndX = e.changedTouches[0].clientX;
-                const swipeThreshold = 50;
-
-                if (lightboxTouchEndX < lightboxTouchStartX - swipeThreshold) {
-                    nextLightboxImage();
-                } else if (lightboxTouchEndX > lightboxTouchStartX + swipeThreshold) {
-                    prevLightboxImage();
-                }
-            }, { passive: true });
 
             document.addEventListener('keydown', (e) => {
                 if (lightbox.classList.contains('active')) {
