@@ -899,28 +899,34 @@
         });
 
         document.addEventListener("DOMContentLoaded", () => {
-            setTimeout(() => {
-                const h2 = document.getElementById("cascading-text");
-                if (!h2) return;
+                setTimeout(() => {
+                    const h2 = document.getElementById("cascading-text");
+                    if (!h2) return;
 
-                const greetingSpan = h2.querySelector(".cascade-word");
+                    const greetingSpan = h2.querySelector(".cascade-word");
 
-                if (greetingSpan && greetingSpan.textContent.includes("Salām")) {
-                    const greetings = ["Salām,", "Hi,", "سَلَام,"];
-                    let currentIndex = 0;
+                    if (greetingSpan && greetingSpan.textContent.includes("Salām")) {
+                        const greetings = ["Salām,", "سَلَام,", "Hi,"];
+                        let currentIndex = 0;
 
-                    const changeGreeting = () => {
-                        currentIndex = (currentIndex + 1) % greetings.length;
-                        greetingSpan.textContent = greetings[currentIndex];
-                    };
+                        const changeGreeting = () => {
+                            currentIndex = (currentIndex + 1) % greetings.length;
+                            greetingSpan.textContent = greetings[currentIndex];
 
-                    setTimeout(() => {
-                        changeGreeting();
-                        setInterval(changeGreeting, 1300);
-                    }, 500);
-                }
-            }, 10);
-        });
+                            // Changes the color for all subsequent rotating text
+                            greetingSpan.style.color = "#FF5733";
+                        };
+
+                        // Changes the color for the original "Salām" on initial page load
+                        greetingSpan.style.color = "#FF5733";
+
+                        setTimeout(() => {
+                            changeGreeting();
+                            setInterval(changeGreeting, 1300);
+                        }, 500);
+                    }
+                }, 10);
+            });
 
         const carousels = document.querySelectorAll(".carousel");
 
