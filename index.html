@@ -58,12 +58,6 @@
             opacity: 1;
         }
 
-        @media (max-width: 768px) {
-            .zoom-icon {
-                opacity: 0.8;
-            }
-        }
-
         /* --- Click Fix for Middle of Image --- */
         .carousel-nav {
             pointer-events: none;
@@ -73,7 +67,7 @@
             pointer-events: auto;
         }
 
-        /* --- Lightbox Styles --- */
+        /* --- Lightbox Fluid Slider Styles --- */
         .lightbox {
             display: none;
             position: fixed;
@@ -94,17 +88,43 @@
             opacity: 1;
         }
 
-        .lightbox-content {
+        .lightbox-slider-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+            z-index: 10001;
+        }
+
+        .lightbox-slider-track {
+            display: flex;
+            height: 100%;
+            width: 100%;
+            transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            will-change: transform;
+        }
+
+        .lightbox-slide {
+            min-width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .lightbox-slide img {
             max-width: 90%;
-            max-height: 90vh;
+            max-height: 85vh;
             border-radius: 4px;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
             object-fit: contain;
-            position: relative;
-            z-index: 10001;
-            /* Added transition for fluid next/prev */
-            transition: opacity 0.2s ease-in-out;
-            opacity: 1;
+            user-select: none;
+            -webkit-user-drag: none;
         }
 
         .lightbox-close {
@@ -156,24 +176,6 @@
             right: 30px;
         }
 
-        @media (max-width: 768px) {
-
-            .lightbox-prev,
-            .lightbox-next {
-                width: 40px;
-                height: 40px;
-                font-size: 1.2rem;
-            }
-
-            .lightbox-prev {
-                left: 10px;
-            }
-
-            .lightbox-next {
-                right: 10px;
-            }
-        }
-
         /* UI Optimized Styles for the Strengths Grid */
         .strengths-grid {
             display: grid;
@@ -194,6 +196,82 @@
             line-height: 1.5;
             color: #555;
             margin: 0;
+        }
+
+        /* -------------------------------------------------------------------------
+           GLOBAL DEADSPACE REMOVAL (Fixes layout gaps caused by css/styles.css)
+        ------------------------------------------------------------------------- */
+        #experience {
+            margin-bottom: 0rem !important;
+            padding-bottom: 0rem !important;
+        }
+
+        #strengths {
+            margin-top: 0rem !important;
+            margin-bottom: 0rem !important;
+            padding-top: 2rem !important;
+            padding-bottom: 2rem !important;
+        }
+
+        #strengths hr {
+            margin-top: 0.5rem !important;
+            margin-bottom: 1rem !important;
+        }
+
+        #about {
+            margin-top: 0rem !important;
+            padding-top: 2rem !important;
+        }
+
+        .section-title {
+  margin-top: 60px;    /* Squeezes out the massive gap, bringing the title closer to the previous section */
+  font-size: 46px;
+  font-weight: 400;
+  margin-bottom: 24px; /* Just a touch more breathing room before the content starts to match the scale of the 46px font */
+}
+
+        @media (max-width: 768px) {
+
+            .lightbox-prev,
+            .lightbox-next {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+
+            .lightbox-prev {
+                left: 10px;
+            }
+
+            .lightbox-next {
+                right: 10px;
+            }
+
+            .zoom-icon {
+                display: none !important;
+            }
+
+            /* Extra tight structural squeeze specifically for mobile screens */
+            #strengths {
+                padding-top: 0.5rem !important;
+                padding-bottom: 0.5rem !important;
+            }
+
+            #about {
+                padding-top: 0.5rem !important;
+            }
+
+            .strengths-grid {
+                gap: 1.25rem;
+                padding-top: 1rem;
+            }
+
+            .section-title {
+                margin-top: 60px;    /* Gives breathing room, but removes the giant gap */
+                margin-bottom: 24px; /* Standard spacing to separate title from content */
+                font-size: 36px;
+                font-weight: 400;
+            }
         }
     </style>
 </head>
@@ -651,7 +729,9 @@
     <div id="lightbox" class="lightbox">
         <span class="lightbox-close">&times;</span>
         <button class="lightbox-prev"><i class="fas fa-chevron-left"></i></button>
-        <img class="lightbox-content" id="lightbox-img">
+        <div class="lightbox-slider-container">
+            <div class="lightbox-slider-track" id="lightbox-track"></div>
+        </div>
         <button class="lightbox-next"><i class="fas fa-chevron-right"></i></button>
     </div>
 
@@ -726,6 +806,7 @@
             const spans = [...h2.querySelectorAll(".cascade-word")];
             const lines = [];
             let currentTop = null;
+            let isDraggingLine = false;
             let currentLine = [];
 
             spans.forEach((span) => {
@@ -794,7 +875,7 @@
                         changeGreeting();
 
                         // 2. Once the first change happens, start the 1800ms loop
-                        setInterval(changeGreeting, 1800);
+                        setInterval(changeGreeting, 1300);
                     }, 500);
                 }
             }, 10);
@@ -965,10 +1046,10 @@
             }, 50);
         });
 
-        // --- Lightbox / Zoom Logic (Updated with Fluid Fade Transition) ---
+        /* --- Full Hardware-Accelerated Sliding Lightbox Logic --- */
         document.addEventListener("DOMContentLoaded", () => {
             const lightbox = document.getElementById('lightbox');
-            const lightboxImg = document.getElementById('lightbox-img');
+            const track = document.getElementById('lightbox-track');
             const closeBtn = document.querySelector('.lightbox-close');
             const nextBtn = document.querySelector('.lightbox-next');
             const prevBtn = document.querySelector('.lightbox-prev');
@@ -977,31 +1058,40 @@
             let currentLightboxImages = [];
             let currentLightboxIndex = 0;
 
-            const updateLightboxImage = () => {
-                // Fade out the current image
-                lightboxImg.style.opacity = 0;
+            const setupLightboxSlides = () => {
+                track.innerHTML = '';
+                currentLightboxImages.forEach(src => {
+                    const slide = document.createElement('div');
+                    slide.className = 'lightbox-slide';
+                    const img = document.createElement('img');
+                    img.src = src;
+                    slide.appendChild(img);
+                    track.appendChild(slide);
+                });
+                updateLightboxPosition(true);
+            };
 
-                // Wait for the CSS fade-out transition (0.2s = 200ms)
-                setTimeout(() => {
-                    lightboxImg.src = currentLightboxImages[currentLightboxIndex];
-
-                    // Fade back in only after the new image is ready
-                    lightboxImg.onload = () => {
-                        lightboxImg.style.opacity = 1;
-                    };
-                }, 200);
+            const updateLightboxPosition = (immediate = false) => {
+                if (immediate) {
+                    track.style.transition = "none";
+                } else {
+                    track.style.transition = "transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
+                }
+                track.style.transform = `translateX(-${currentLightboxIndex * 100}%)`;
             };
 
             const nextLightboxImage = (e) => {
                 if (e) e.stopPropagation();
+                if (currentLightboxImages.length <= 1) return;
                 currentLightboxIndex = (currentLightboxIndex + 1) % currentLightboxImages.length;
-                updateLightboxImage();
+                updateLightboxPosition();
             };
 
             const prevLightboxImage = (e) => {
                 if (e) e.stopPropagation();
+                if (currentLightboxImages.length <= 1) return;
                 currentLightboxIndex = (currentLightboxIndex - 1 + currentLightboxImages.length) % currentLightboxImages.length;
-                updateLightboxImage();
+                updateLightboxPosition();
             };
 
             carouselItems.forEach(item => {
@@ -1022,7 +1112,6 @@
                             const originalItems = allItems.slice(1, -1);
 
                             currentLightboxImages = originalItems.map(node => node.querySelector('img').src);
-
                             currentLightboxIndex = currentLightboxImages.indexOf(img.src);
 
                             if (currentLightboxIndex === -1) {
@@ -1031,8 +1120,7 @@
                                 if (currentLightboxIndex === -1) currentLightboxIndex = 0;
                             }
 
-                            lightboxImg.src = currentLightboxImages[currentLightboxIndex];
-                            lightboxImg.style.opacity = 1; // Ensure it starts fully visible
+                            setupLightboxSlides();
                             lightbox.classList.add('active');
                             document.body.style.overflow = 'hidden';
                         }
@@ -1046,19 +1134,38 @@
             const closeLightbox = () => {
                 lightbox.classList.remove('active');
                 document.body.style.overflow = 'auto';
-                setTimeout(() => { if (!lightbox.classList.contains('active')) lightboxImg.src = ""; }, 300);
+                setTimeout(() => { if (!lightbox.classList.contains('active')) track.innerHTML = ""; }, 300);
             };
 
-            // Event Listeners
             closeBtn.addEventListener('click', closeLightbox);
             nextBtn.addEventListener('click', nextLightboxImage);
             prevBtn.addEventListener('click', prevLightboxImage);
 
+            // Fix 1: Optimized Backdrop Click-to-Close Interceptor
             lightbox.addEventListener('click', (e) => {
-                if (e.target === lightbox) {
+                if (e.target.tagName !== 'IMG' && !e.target.closest('button') && !e.target.classList.contains('lightbox-close')) {
                     closeLightbox();
                 }
             });
+
+            // Fluid Swiping inside Fullscreen Lightbox
+            let lightboxTouchStartX = 0;
+            let lightboxTouchEndX = 0;
+
+            lightbox.addEventListener('touchstart', (e) => {
+                lightboxTouchStartX = e.changedTouches[0].clientX;
+            }, { passive: true });
+
+            lightbox.addEventListener('touchend', (e) => {
+                lightboxTouchEndX = e.changedTouches[0].clientX;
+                const swipeThreshold = 50;
+
+                if (lightboxTouchEndX < lightboxTouchStartX - swipeThreshold) {
+                    nextLightboxImage();
+                } else if (lightboxTouchEndX > lightboxTouchStartX + swipeThreshold) {
+                    prevLightboxImage();
+                }
+            }, { passive: true });
 
             document.addEventListener('keydown', (e) => {
                 if (lightbox.classList.contains('active')) {
@@ -1068,7 +1175,6 @@
                 }
             });
         });
-
     </script>
 </body>
 
