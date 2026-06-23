@@ -1054,157 +1054,176 @@
     });
 
     /* --- Full Hardware-Accelerated Sliding Lightbox Logic --- */
-    document.addEventListener("DOMContentLoaded", () => {
-        const lightbox = document.getElementById('lightbox');
-        const track = document.getElementById('lightbox-track');
-        const closeBtn = document.querySelector('.lightbox-close');
-        const nextBtn = document.querySelector('.lightbox-next');
-        const prevBtn = document.querySelector('.lightbox-prev');
-        const carouselItems = document.querySelectorAll('.carousel-item');
+        document.addEventListener("DOMContentLoaded", () => {
+            const lightbox = document.getElementById('lightbox');
+            const track = document.getElementById('lightbox-track');
+            const closeBtn = document.querySelector('.lightbox-close');
+            const nextBtn = document.querySelector('.lightbox-next');
+            const prevBtn = document.querySelector('.lightbox-prev');
+            const carouselItems = document.querySelectorAll('.carousel-item');
 
-        let currentLightboxImages = [];
-        let currentLightboxIndex = 0;
+            let currentLightboxImages = [];
+            let currentLightboxIndex = 0; // Represents the logical index selected
+            let lightboxDomIndex = 1;     // Tracks the actual DOM slide (shifted by +1 because of clones)
+            let isLightboxTransitioning = false; // Prevents spam-clicking
 
-        const setupLightboxSlides = () => {
-            track.innerHTML = '';
-            currentLightboxImages.forEach(src => {
-                const slide = document.createElement('div');
-                slide.className = 'lightbox-slide';
-                const img = document.createElement('img');
-                img.src = src;
-                slide.appendChild(img);
-                track.appendChild(slide);
-            });
-            updateLightboxPosition(true);
-        };
+            const setupLightboxSlides = () => {
+                track.innerHTML = '';
+                if (currentLightboxImages.length === 0) return;
 
-        const updateLightboxPosition = (immediate = false) => {
-            if (immediate) {
-                track.style.transition = "none";
-            } else {
-                track.style.transition = "transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
-            }
-            track.style.transform = `translateX(-${currentLightboxIndex * 100}%)`;
-        };
+                // Create clones for infinite loop effect
+                const firstSrc = currentLightboxImages[0];
+                const lastSrc = currentLightboxImages[currentLightboxImages.length - 1];
+                const slidesToRender = [lastSrc, ...currentLightboxImages, firstSrc];
 
-        const nextLightboxImage = (e) => {
-            if (e) e.stopPropagation();
-            if (currentLightboxImages.length <= 1) return;
-            currentLightboxIndex = (currentLightboxIndex + 1) % currentLightboxImages.length;
-            updateLightboxPosition();
-        };
+                slidesToRender.forEach(src => {
+                    const slide = document.createElement('div');
+                    slide.className = 'lightbox-slide';
+                    const img = document.createElement('img');
+                    img.src = src;
+                    slide.appendChild(img);
+                    track.appendChild(slide);
+                });
 
-        const prevLightboxImage = (e) => {
-            if (e) e.stopPropagation();
-            if (currentLightboxImages.length <= 1) return;
-            currentLightboxIndex = (currentLightboxIndex - 1 + currentLightboxImages.length) % currentLightboxImages.length;
-            updateLightboxPosition();
-        };
-
-        carouselItems.forEach(item => {
-            let startX, currentX;
-
-            item.addEventListener('mousedown', (e) => startX = e.clientX);
-            item.addEventListener('touchstart', (e) => startX = e.touches[0].clientX, { passive: true });
-
-            // Helper function to actually open the lightbox
-            const openLightboxForThisItem = () => {
-                const img = item.querySelector('img');
-                if (img) {
-                    const inner = item.closest('.carousel-inner');
-                    const allItems = Array.from(inner.children);
-                    const originalItems = allItems.slice(1, -1);
-
-                    currentLightboxImages = originalItems.map(node => node.querySelector('img').src);
-                    currentLightboxIndex = currentLightboxImages.indexOf(img.src);
-
-                    if (currentLightboxIndex === -1) {
-                        const filename = img.src.split('/').pop();
-                        currentLightboxIndex = currentLightboxImages.findIndex(src => src.endsWith(filename));
-                        if (currentLightboxIndex === -1) currentLightboxIndex = 0;
-                    }
-
-                    setupLightboxSlides();
-                    lightbox.classList.add('active');
-                    document.body.style.overflow = 'hidden';
-                }
+                lightboxDomIndex = currentLightboxIndex + 1;
+                updateLightboxPosition(true);
             };
 
-            // FIX: Give the zoom icon a dedicated, high-priority click handler
-            const zoomIcon = item.querySelector('.zoom-icon');
-            if (zoomIcon) {
-                const handleZoomTap = (e) => {
-                    e.preventDefault();
-                    e.stopPropagation(); // Stop the touch from bubbling to the carousel arrows
-                    openLightboxForThisItem();
+            const updateLightboxPosition = (immediate = false) => {
+                if (immediate) {
+                    track.style.transition = "none";
+                } else {
+                    track.style.transition = "transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
+                }
+                track.style.transform = `translateX(-${lightboxDomIndex * 100}%)`;
+            };
+
+            // Instantly snap to the real images when reaching a cloned edge
+            track.addEventListener('transitionend', () => {
+                isLightboxTransitioning = false;
+                if (lightboxDomIndex === 0) {
+                    lightboxDomIndex = currentLightboxImages.length;
+                    updateLightboxPosition(true);
+                } else if (lightboxDomIndex === currentLightboxImages.length + 1) {
+                    lightboxDomIndex = 1;
+                    updateLightboxPosition(true);
+                }
+            });
+
+            const nextLightboxImage = (e) => {
+                if (e) e.stopPropagation();
+                if (currentLightboxImages.length <= 1 || isLightboxTransitioning) return;
+                isLightboxTransitioning = true;
+                lightboxDomIndex++;
+                updateLightboxPosition();
+            };
+
+            const prevLightboxImage = (e) => {
+                if (e) e.stopPropagation();
+                if (currentLightboxImages.length <= 1 || isLightboxTransitioning) return;
+                isLightboxTransitioning = true;
+                lightboxDomIndex--;
+                updateLightboxPosition();
+            };
+
+            carouselItems.forEach(item => {
+                let startX, currentX;
+
+                item.addEventListener('mousedown', (e) => startX = e.clientX);
+                item.addEventListener('touchstart', (e) => startX = e.touches[0].clientX, { passive: true });
+
+                const openLightboxForThisItem = () => {
+                    const img = item.querySelector('img');
+                    if (img) {
+                        const inner = item.closest('.carousel-inner');
+                        const allItems = Array.from(inner.children);
+                        const originalItems = allItems.slice(1, -1);
+
+                        currentLightboxImages = originalItems.map(node => node.querySelector('img').src);
+                        currentLightboxIndex = currentLightboxImages.indexOf(img.src);
+
+                        if (currentLightboxIndex === -1) {
+                            const filename = img.src.split('/').pop();
+                            currentLightboxIndex = currentLightboxImages.findIndex(src => src.endsWith(filename));
+                            if (currentLightboxIndex === -1) currentLightboxIndex = 0;
+                        }
+
+                        setupLightboxSlides();
+                        lightbox.classList.add('active');
+                        document.body.style.overflow = 'hidden';
+                    }
                 };
 
-                zoomIcon.addEventListener('click', handleZoomTap);
-                zoomIcon.addEventListener('touchend', handleZoomTap);
-            }
+                const zoomIcon = item.querySelector('.zoom-icon');
+                if (zoomIcon) {
+                    const handleZoomTap = (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        openLightboxForThisItem();
+                    };
 
-            // Standard click handler for the rest of the image (Desktop mainly)
-            const handleClick = (e) => {
-                // If they clicked the zoom icon, ignore it here (handled above)
-                if (e.target.closest('.zoom-icon')) return;
-
-                // On mobile screens, tapping the image itself does nothing to prevent accidental fires
-                if (window.innerWidth <= 768) return;
-
-                currentX = e.clientX || (e.changedTouches ? e.changedTouches[0].clientX : startX);
-                const diff = Math.abs(currentX - startX);
-
-                if (diff < 10) {
-                    openLightboxForThisItem();
+                    zoomIcon.addEventListener('click', handleZoomTap);
+                    zoomIcon.addEventListener('touchend', handleZoomTap);
                 }
+
+                const handleClick = (e) => {
+                    if (e.target.closest('.zoom-icon')) return;
+                    if (window.innerWidth <= 768) return;
+
+                    currentX = e.clientX || (e.changedTouches ? e.changedTouches[0].clientX : startX);
+                    const diff = Math.abs(currentX - startX);
+
+                    if (diff < 10) {
+                        openLightboxForThisItem();
+                    }
+                };
+
+                item.addEventListener('mouseup', handleClick);
+                item.addEventListener('touchend', handleClick);
+            });
+
+            const closeLightbox = () => {
+                lightbox.classList.remove('active');
+                document.body.style.overflow = 'auto';
+                setTimeout(() => { if (!lightbox.classList.contains('active')) track.innerHTML = ""; }, 300);
             };
 
-            item.addEventListener('mouseup', handleClick);
-            item.addEventListener('touchend', handleClick);
+            closeBtn.addEventListener('click', closeLightbox);
+            nextBtn.addEventListener('click', nextLightboxImage);
+            prevBtn.addEventListener('click', prevLightboxImage);
+
+            lightbox.addEventListener('click', (e) => {
+                if (e.target.tagName !== 'IMG' && !e.target.closest('button') && !e.target.classList.contains('lightbox-close')) {
+                    closeLightbox();
+                }
+            });
+
+            let lightboxTouchStartX = 0;
+            let lightboxTouchEndX = 0;
+
+            lightbox.addEventListener('touchstart', (e) => {
+                lightboxTouchStartX = e.changedTouches[0].clientX;
+            }, { passive: true });
+
+            lightbox.addEventListener('touchend', (e) => {
+                lightboxTouchEndX = e.changedTouches[0].clientX;
+                const swipeThreshold = 50;
+
+                if (lightboxTouchEndX < lightboxTouchStartX - swipeThreshold) {
+                    nextLightboxImage();
+                } else if (lightboxTouchEndX > lightboxTouchStartX + swipeThreshold) {
+                    prevLightboxImage();
+                }
+            }, { passive: true });
+
+            document.addEventListener('keydown', (e) => {
+                if (lightbox.classList.contains('active')) {
+                    if (e.key === "Escape") closeLightbox();
+                    if (e.key === "ArrowRight") nextLightboxImage();
+                    if (e.key === "ArrowLeft") prevLightboxImage();
+                }
+            });
         });
-
-        const closeLightbox = () => {
-            lightbox.classList.remove('active');
-            document.body.style.overflow = 'auto';
-            setTimeout(() => { if (!lightbox.classList.contains('active')) track.innerHTML = ""; }, 300);
-        };
-
-        closeBtn.addEventListener('click', closeLightbox);
-        nextBtn.addEventListener('click', nextLightboxImage);
-        prevBtn.addEventListener('click', prevLightboxImage);
-
-        lightbox.addEventListener('click', (e) => {
-            if (e.target.tagName !== 'IMG' && !e.target.closest('button') && !e.target.classList.contains('lightbox-close')) {
-                closeLightbox();
-            }
-        });
-
-        let lightboxTouchStartX = 0;
-        let lightboxTouchEndX = 0;
-
-        lightbox.addEventListener('touchstart', (e) => {
-            lightboxTouchStartX = e.changedTouches[0].clientX;
-        }, { passive: true });
-
-        lightbox.addEventListener('touchend', (e) => {
-            lightboxTouchEndX = e.changedTouches[0].clientX;
-            const swipeThreshold = 50;
-
-            if (lightboxTouchEndX < lightboxTouchStartX - swipeThreshold) {
-                nextLightboxImage();
-            } else if (lightboxTouchEndX > lightboxTouchStartX + swipeThreshold) {
-                prevLightboxImage();
-            }
-        }, { passive: true });
-
-        document.addEventListener('keydown', (e) => {
-            if (lightbox.classList.contains('active')) {
-                if (e.key === "Escape") closeLightbox();
-                if (e.key === "ArrowRight") nextLightboxImage();
-                if (e.key === "ArrowLeft") prevLightboxImage();
-            }
-        });
-    });
     </script>
 </body>
 
