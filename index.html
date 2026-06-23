@@ -181,7 +181,7 @@
                         <div class="experience-left-content">
                             <div class="experience-header-mobile">
                                 <div class="experience-number hide-in-grid">02</div>
-                                <div class="experience-company">TCMV</div>
+                                <div class="experience-company">TCMV Elections</div>
                             </div>
 
                             <!-- 2. Carousel ----------------->
@@ -218,20 +218,22 @@
 
                             <!-- 3. Role + Date ---------------->
                             <div class="experience-role-row hideondesktop">
-                                <div class="experience-title">Creative Lead</div>
-                                <div class="experience-date">Apr 2019 — Jan 2023</div>
+                                <div class="experience-title">Brand Designer</div>
+                                <div class="experience-date">2021 — 2024</div>
                             </div>
 
                             <div class="experience-text">
-                                At TCMV, I worked as both a brand and product designer, collaborating with creatives,
-                                copywriters, and program
-                                coordinators to produce a wide range of digital and print assets—primarily digital. I
-                                contributed to several marketing
-                                campaigns from ideation through to execution.<br><br>
+                                Designed high-impact marketing materials and campaign creatives for national educational
+                                initiatives, ensuring strict visual consistency across 4 print and digital platforms
+                                that reached an audience of over 100,000.<br><br>
 
-                                I also led a brand refresh, redesigning core visuals to create a cohesive identity
-                                across platforms. My work spanned
-                                print, digital, and apparel, and I provided art direction for all major campaigns.
+                                Produced over 50 accessible multimedia assets (banners, promotional videos, and
+                                brochures), increasing digital campaign engagement by 20% while ensuring complete brand
+                                cohesion.<br><br>
+
+                                Designed and co-authored the 10-page official campaign catalogue, consulting closely
+                                with 10+ Indigenous and community partners to ensure accurate and respectful visual
+                                representation.
                             </div>
 
                             <div class="experience-team">
@@ -251,8 +253,8 @@
                         <!-- Grid Column 3: Right Column --------->
                         <div class="experience-right hideonmobile">
                             <div class="experience-role-row">
-                                <div class="experience-title">Creative Lead</div>
-                                <div class="experience-date">Apr 2019 — Jan 2023</div>
+                                <div class="experience-title">Brand Designer</div>
+                                <div class="experience-date">2021 — 2024</div>
                             </div>
 
                             <div class="carousel">
@@ -334,21 +336,18 @@
                             <!-- 3. Role + Date ---------------->
                             <div class="experience-role-row hideondesktop">
                                 <div class="experience-title">Graphic Designer</div>
-                                <div class="experience-date">Feb 2020 — Apr 2022</div>
+                                <div class="experience-date">2020 — 2022</div>
                             </div>
 
                             <div class="experience-text">
-                                Worked closely with producers and editors to craft a bold visual identity for a new
-                                podcast cover art, social promos,
-                                and episode graphics that felt fresh and consistent.
-                                <br><br>
-                                For theatre productions, I started with rough sketches and worked closely with
-                                playwrights to understand the heart of
-                                each story. From there, I translated their ideas into posters and programs that
-                                reflected the tone and setting of the
-                                play. Every piece combined illustration, layout, and typography—bringing their vision to
-                                life with the full range of
-                                tools at my disposal.
+                                Led branding efforts for cultural and community initiatives, designing over 30 unique
+                                assets including logos, social media campaigns, and graphics that contributed to a 20%
+                                growth in social followers.<br><br>
+                                Produced and edited promotional videos and motion graphics using Premiere Pro,
+                                significantly boosting online community engagement and elevating the organization's
+                                brand.<br><br>
+                                Consulted with community partners to ensure culturally respectful visual representation
+                                across all multimedia formats.
                             </div>
 
                             <div class="experience-team">
@@ -366,7 +365,7 @@
                         <div class="experience-right hideonmobile">
                             <div class="experience-role-row">
                                 <div class="experience-title">Graphic Designer</div>
-                                <div class="experience-date">Feb 2020 — Apr 2022</div>
+                                <div class="experience-date">2020 — 2022</div>
                             </div>
 
                             <div class="carousel">
@@ -399,7 +398,6 @@
                         </div>
                     </div>
                     <!------------------------------------------------------------------------------------------------->
-
 
                 </section>
 
@@ -441,6 +439,18 @@
                                 soccer ball, catching a late-night movie, or hanging out with
                                 my family & a few friends.
                             </p>
+                            <h4 style="margin-top: 2rem; margin-bottom: 1rem; font-size: 1.2rem; font-weight: 600;">Core
+                                Strengths</h4>
+                            <ul style="list-style-type: none; padding-left: 0; margin-bottom: 2rem;">
+                                <li style="margin-bottom: 0.5rem;"><strong>Project Management:</strong> Confident
+                                    leading creative teams and managing timelines from concept to delivery</li>
+                                <li style="margin-bottom: 0.5rem;"><strong>Collaboration:</strong> Experienced working
+                                    with marketing, development, and community partners</li>
+                                <li style="margin-bottom: 0.5rem;"><strong>Creative Strategy:</strong> Skilled at
+                                    combining innovation with clear, consistent brand design</li>
+                                <li style="margin-bottom: 0.5rem;"><strong>Inclusive Design:</strong> Committed to
+                                    socially conscious work that respects cultural and community values</li>
+                            </ul>
                         </div>
                     </div>
                 </section>
@@ -609,7 +619,28 @@
 
         //Simple Scrolling SCript
 
+        document.addEventListener("DOMContentLoaded", () => {
+                // Give the cascade script a tiny fraction of a second to wrap the words in spans
+                setTimeout(() => {
+                    const h2 = document.getElementById("cascading-text");
+                    if (!h2) return;
 
+                    // Grab the very first word span generated by your cascade script ("Hi,")
+                    const greetingSpan = h2.querySelector(".cascade-word");
+
+                    if (greetingSpan && greetingSpan.textContent.includes("Hi")) {
+                        // The sequence of greetings (keeping the comma for grammatical flow)
+                        const greetings = ["Hi,", "Salām,", "سَلَام,"];
+                        let currentIndex = 0;
+
+                        // Change the greeting automatically every 2.5 seconds (2500 milliseconds)
+                        setInterval(() => {
+                            currentIndex = (currentIndex + 1) % greetings.length;
+                            greetingSpan.textContent = greetings[currentIndex];
+                        }, 1800);
+                    }
+                }, 10);
+            });
 
         const carousels = document.querySelectorAll(".carousel");
 
